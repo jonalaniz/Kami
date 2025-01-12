@@ -8,13 +8,13 @@
 import UIKit
 
 extension UIToolbar {
-    func setDefaultAppearance() {
+    func setColors(background: UIColor, tint: UIColor) {
         let appearance = UIToolbarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = .toolbarTint
+        appearance.backgroundColor = background
 
         self.standardAppearance = appearance
         self.scrollEdgeAppearance = appearance
-        self.tintColor = .toolbarIconTint
+        self.tintColor = tint
     }
 }

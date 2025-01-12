@@ -9,6 +9,7 @@ import Foundation
 
 enum HTMLInjection {
     case customCSS
+    case customJS
     case metaTag
     case testHTML
 
@@ -70,6 +71,15 @@ enum HTMLInjection {
                         }
                     }
                 </style>
+                """
+        case .customJS:
+            return
+                """
+                (function() {
+                    var body = document.body;
+                    var html = document.documentElement;
+                    return Math.min(body.offsetHeight, body.scrollHeight, html.offsetHeight, html.scrollHeight);
+                })();
                 """
         case .metaTag:
             return

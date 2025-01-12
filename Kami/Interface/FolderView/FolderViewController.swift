@@ -18,15 +18,40 @@ class FolderViewController: BaseTableViewController {
     }
 
     override func registerCells() {
-        tableView.register(ConversationCell.self, forCellReuseIdentifier: "Cell")
+        tableView.register(ConversationPreviewCell.self,
+                           forCellReuseIdentifier: ConversationPreviewCell.reuseIdentifier)
     }
 
-    func setupToolbar() {
-        
+    override func viewWillAppear(_ animated: Bool) {
+        title = titleText
+
+        if let indexPath = tableView.indexPathForSelectedRow {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+    }
+
+    override func setupToolbar() {
+        toolbarItems = [
+            barButtonItem(.preferences, action: #selector(buttonPressed)),
+            UIBarButtonItem.flexibleSpace(),
+            barButtonItem(.envelope, action: #selector(buttonPressed))
+        ]
+        super.setupToolbar()
+    }
+
+    @objc func buttonPressed(_ sender: UIBarButtonItem) {
+        print("button pressed")
+    }
+
+    private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
+        return UIBarButtonItem(image: symbol.image(),
+                               style: .plain,
+                               target: self,
+                               action: action)
     }
 }
 
-extension FolderViewController: ControllerDelegate {
+extension FolderViewController: DataManagerDelegate {
     func dataUpdated() {
         tableView.reloadData()
     }

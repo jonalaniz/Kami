@@ -1,5 +1,5 @@
 //
-//  MailboxTableViewCell.swift
+//  MailboxCell.swift
 //  Kami
 //
 //  Created by Jon Alaniz on 12/24/24.
@@ -12,17 +12,15 @@ class MailboxCell: BaseTableViewCell {
 
     override func setupViews() {
         accessoryType = .disclosureIndicator
-        backgroundColor = .cellTint
+        backgroundColor = .inactiveCell
 
-        let selectionView = UIView()
-        selectionView.backgroundColor = .cellSelected
-
-        selectedBackgroundView = selectionView
+        selectedBackgroundView = SelectedView()
     }
 
     func configure(name: String) {
         var configuration = defaultContentConfiguration()
         configuration.text = name
+        configuration.textProperties.color = .headerText
 
         contentConfiguration = configuration
     }

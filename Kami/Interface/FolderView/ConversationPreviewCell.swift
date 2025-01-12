@@ -1,5 +1,5 @@
 //
-//  ConversationCell.swift
+//  ConversationPreviewCell.swift
 //  Kami
 //
 //  Created by Jon Alaniz on 12/1/24.
@@ -7,9 +7,12 @@
 
 import UIKit
 
-class ConversationPreviewCell: UITableViewCell {
+class ConversationPreviewCell: BaseTableViewCell {
+    static let reuseIdentifier = "ConversationPreviewCell"
+    
     private var senderLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .headerText
         label.font = .preferredFont(forTextStyle: .headline)
         label.numberOfLines = 1
         return label
@@ -25,6 +28,7 @@ class ConversationPreviewCell: UITableViewCell {
 
     private var subjectLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .headerText
         label.font = .preferredFont(forTextStyle: .body)
         label.numberOfLines = 1
         return label
@@ -32,6 +36,7 @@ class ConversationPreviewCell: UITableViewCell {
 
     private var previewLabel: UILabel = {
         let label = UILabel()
+        label.textColor = .text
         label.font = .preferredFont(forTextStyle: .caption1)
         label.textColor = .secondaryLabel
         label.numberOfLines = 1
@@ -46,31 +51,18 @@ class ConversationPreviewCell: UITableViewCell {
         return stackView
     }()
 
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupLayout()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func configure(with conversation: ConversationPreview) {
-        senderLabel.text = conversation.customer?.name()
-        subjectLabel.text = conversation.subject
-        previewLabel.text = conversation.preview
-    }
-
-    private func setupLayout() {
-        backgroundColor = .cellTint
+    override func setupViews() {
+        selectedBackgroundView = SelectedView()
         accessoryType = .disclosureIndicator
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+
         stackView.addArrangedSubview(senderLabel)
         stackView.addArrangedSubview(subjectLabel)
         stackView.addArrangedSubview(previewLabel)
-
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(stackView)
+    }
 
+    override func setupConstraints() {
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
             stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
@@ -78,4 +70,33 @@ class ConversationPreviewCell: UITableViewCell {
             stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
     }
+
+    func configure(with conversation: ConversationPreview) {
+        senderLabel.text = conversation.customer?.name()
+        subjectLabel.text = conversation.subject
+        previewLabel.text = conversation.preview
+
+        // Here we configure the bkcolor
+        guard let status = ConversationStatus(rawValue: conversation.status)
+        else {
+            backgroundColor = .inactiveCell
+            return
+        }
+
+        setBackgroundColor(for: status)
+    }
+
+    private func setBackgroundColor(for status: ConversationStatus) {
+        switch status {
+        case .active: backgroundColor = .activeCell
+        default: backgroundColor = .inactiveCell
+        }
+    }
+}
+
+enum ConversationStatus: String {
+    case active = "active"
+    case closed = "closed"
+    case pending = "pending"
+    case spam = "spam"
 }

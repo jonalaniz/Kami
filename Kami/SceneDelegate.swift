@@ -7,16 +7,43 @@
 
 import UIKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-
+class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDelegate {
+    var coordinator: MainCoordinator?
     var window: UIWindow?
 
-
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard let windowScene = scene as? UIWindowScene else { fatalError() }
+        window = UIWindow(windowScene: windowScene)
+
+        configureSplitViewController()
+
+    }
+
+    private func configureSplitViewController() {
+        guard let window = window else { fatalError() }
+
+        // Initialize a SplitViewController and Coordinator
+        let splitViewController: UISplitViewController
+
+        splitViewController = UISplitViewController()
+
+        coordinator = MainCoordinator(splitViewController: splitViewController)
+        coordinator?.start()
+
+        // Setup our SplitViewController
+        splitViewController.preferredDisplayMode = UISplitViewController.DisplayMode.oneBesideSecondary
+        splitViewController.primaryBackgroundStyle = .sidebar
+        splitViewController.delegate = self
+
+        // Set the window to the SplitViewController
+        window.rootViewController = splitViewController
+        window.makeKeyAndVisible()
+    }
+
+    func splitViewController(_ splitViewController: UISplitViewController,
+                             collapseSecondary secondaryViewController: UIViewController,
+                             onto primaryViewController: UIViewController) -> Bool {
+        return true
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -46,7 +73,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
-
-
 }
 

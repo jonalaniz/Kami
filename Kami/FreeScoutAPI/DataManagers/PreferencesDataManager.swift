@@ -1,5 +1,5 @@
 //
-//  ConfigurationDataManager.swift
+//  PreferencesDataManager.swift
 //  Kami
 //
 //  Created by Jon Alaniz on 1/1/25.
@@ -7,45 +7,170 @@
 
 import UIKit
 
+enum PreferencesSection: Int, CaseIterable {
+    case signIn = 0
+}
+
+enum SignInRow: Int, CaseIterable {
+    case url = 0
+    case apiKey
+}
+
 class PreferencesDataManager: BaseDataManager {
     static let shared = PreferencesDataManager()
 
-    var configuration: Configuration?
+    private var configuration: Configuration?
+    private var urlString: String?
+    private var key: String?
+
+    var isSignedIn: Bool {
+        return configuration != nil
+    }
 
     private init() {
         super.init()
         configuration = configurator.getConfiguration()
+        urlString = configuration?.secret.url.absoluteString
+        key = configuration?.secret.key
     }
+
+    @objc func inputText(_ sender: UITextField) {
+        guard let text = sender.text else { return }
+        switch sender.isSecureTextEntry {
+        // Password TextField
+        case true: key = text
+
+        // URL TextField
+        case false: urlString = text
+        }
+
+        // Tell our delegate data has been updated
+        if hasValidCredentials() { delegate?.dataUpdated() }
+    }
+
+    func hasValidCredentials() -> Bool {
+        // Return true if we have a valid address and API key
+        print("Key: \(key): \(isValidKey(key))")
+        print("URL: \(urlString): \(isValidURL(urlString))")
+        return isValidKey(key) && isValidURL(urlString) == true
+    }
+
+    func signIn() {
+        // TODO: Implement url/key validation
+        // Here we need to make a call for just the header data
+        // at the server and get a 200 response
+
+        // Save the data
+        let secret = Configuration.Secret(url: URL(string: urlString!)!, key: key!)
+        configurator.saveConfiguration(Configuration(secret: secret))
+
+        // Reload the data
+        configuration = configurator.getConfiguration()
+
+        // Check if you can grab the data else error out
+        guard configuration != nil else { return }
+
+        // Notify the delegate
+        delegate?.dataUpdated()
+    }
+
+    func signOut() {
+        key = nil
+        urlString = nil
+        configurator.signOut()
+        configuration = nil
+        delegate?.dataUpdated()
+    }
+
+    // Validate the API Key is a valid 128-Bit key (32 characters long)
+    private func isValidKey(_ key: String?) -> Bool {
+        guard let key = key else { return false }
+        return key.count == 32
+    }
+
+    private func isValidURL(_ url: String?) -> Bool {
+        guard let url = url,
+              let _ = URL(string: url)
+        else { return false }
+        return true
+    }
+
+    // TODO: Add a clear function to clear out passwords from memory
 }
 
-extension PreferencesDataManager: UITableViewDataSource, UITableViewDelegate {
+extension PreferencesDataManager: UITableViewDataSource {
+    // MARK: - UITableView Functions
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return PreferencesSection.allCases.count
+    }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        guard let section = PreferencesSection(rawValue: section)
+        else { return 0 }
+
+        switch section {
+        case .signIn: return SignInRow.allCases.count
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let textField = TextFieldFactory.textField(type: .URL, placeholder: "FreeScout URL")
-        let cell = InputCell(textField: textField)
+        guard let section = PreferencesSection(rawValue: indexPath.section)
+        else { return UITableViewCell() }
 
-        return cell
+        switch section {
+        case .signIn: return signInCellFor(indexPath.row)
+        }
     }
 
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = HeaderFooterView()
-        headerView.configure(label: "Sign In", type: .header)
+    // MARK: - Helper Functions
+    private func signInCellFor(_ row: Int) -> UITableViewCell {
+        let type: TextFieldType
+        let content: String?
 
-        return headerView
+        guard let row = SignInRow(rawValue: row)
+        else { return UITableViewCell() }
+
+        switch row {
+        case .url:
+            type = .URL
+            content = configuration?.secret.url.absoluteString
+        case .apiKey:
+            type = .password
+            content = configuration?.secret.key
+        }
+
+        return createInputCell(type: type, content: content)
     }
 
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        let headerView = HeaderFooterView()
-        headerView.configure(label: "Kami requires a FreeScout insance with the API & Webhooks module enabled.",
-                             type: .footer)
+    private func createInputCell(type: TextFieldType, content: String?) -> UITableViewCell {
+        let textField = TextFieldFactory.textField(type: type, placeholder: type.placeholder())
+        textField.text = content
+        textField.delegate = self
+        textField.textColor = isSignedIn ? .text : .headerText
+        textField.isEnabled = !isSignedIn
 
-        return headerView
+        switch type {
+        case .URL:
+            textField.text = urlString
+        case .password:
+            textField.text = key
+        default:
+            break
+        }
+
+        textField.addTarget(self,
+                            action: #selector(inputText),
+                            for: .editingChanged)
+
+        return InputCell(textField: textField)
     }
+}
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 44
+extension PreferencesDataManager: UITextFieldDelegate {
+    // Dismiss the keyboard when the return field is pressed
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }

@@ -14,10 +14,13 @@ class BaseTableViewController: UIViewController {
     var delegate: UITableViewDelegate?
     var titleText: String?
     var tableStyle: UITableView.Style = .plain
+    var toolbarColor: UIColor = .subHeaderToolbar
+    var toolbarTint: UIColor = .iconsTexts
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupView()
+        setupToolbar()
         setupTableView()
         registerCells()
     }
@@ -38,6 +41,12 @@ class BaseTableViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.barTintColor = .background
         navigationController?.navigationBar.prefersLargeTitles = true
+    }
+
+    func setupToolbar() {
+        let toolbar = navigationController?.toolbar
+        toolbar?.setColors(background: toolbarColor, tint: toolbarTint)
+        navigationController?.setToolbarHidden(false, animated: true)
     }
 
     private func setupTableView() {

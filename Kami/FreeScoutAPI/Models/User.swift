@@ -7,9 +7,28 @@
 
 import Foundation
 
+struct Users: Codable {
+    let embeddedUsers: EmbeddedUsers
+    let page: Page
+
+    enum CodingKeys: String, CodingKey {
+        case embeddedUsers = "_embedded"
+        case page
+    }
+
+    init(embeddedUsers: EmbeddedUsers, page: Page) {
+        self.embeddedUsers = embeddedUsers
+        self.page = page
+    }
+}
+
+struct EmbeddedUsers: Codable {
+    let users: [User]
+}
+
 struct User: Codable {
     let id: Int
-    let type: String
+    let type: String?
     let firstName: String?
     let lastName: String?
     let photoUrl: String

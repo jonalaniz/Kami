@@ -8,7 +8,7 @@
 import Foundation
 
 struct ConversationContainer: Codable {
-    let container: ConversationsContainer
+    let container: embeddedConversations
     let page: Page
 
     enum CodingKeys: String, CodingKey {
@@ -16,13 +16,13 @@ struct ConversationContainer: Codable {
         case page
     }
     
-    init(container: ConversationsContainer, page: Page) {
+    init(container: embeddedConversations, page: Page) {
         self.container = container
         self.page = page
     }
 }
 
-struct ConversationsContainer: Codable {
+struct embeddedConversations: Codable {
     let conversations: [ConversationPreview]
 }
 
