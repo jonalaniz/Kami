@@ -67,8 +67,5 @@ extension FolderViewController: DataManagerDelegate {
         tableView.reloadData()
     }
 
-    func tableViewHeightUpdated() {
-        self.tableView.beginUpdates()
-        self.tableView.endUpdates()
-    }
+    func tableViewHeightUpdated() {}
 }
