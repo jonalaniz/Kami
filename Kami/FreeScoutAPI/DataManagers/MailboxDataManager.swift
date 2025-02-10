@@ -45,7 +45,7 @@ class MailboxDataManager: BaseDataManager {
 
 }
 
-extension MailboxDataManager: UITableViewDelegate, UITableViewDataSource {
+extension MailboxDataManager: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let id = mailboxes[indexPath.section].id
         let folder = mailboxFolders[id]
@@ -57,12 +57,6 @@ extension MailboxDataManager: UITableViewDelegate, UITableViewDataSource {
         cell.configure(name: name)
 
         return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let mailboxID = mailboxes[indexPath.section].id
-        guard let folder = mailboxFolders[mailboxID]?.container.folders[indexPath.row] else { return }
-        controllerDidSelect(folder.id, title: name(of: folder))
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -89,7 +83,7 @@ extension MailboxDataManager: UITableViewDelegate, UITableViewDataSource {
         return headerView
     }
 
-    private func name(of folder: Folder?) -> String {
+    func name(of folder: Folder?) -> String {
         guard let folder = folder else { return "" }
         switch folder.name {
         case "Mine":

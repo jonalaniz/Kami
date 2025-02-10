@@ -12,7 +12,7 @@ class MailboxesViewController: BaseTableViewController {
 
     override func viewDidLoad() {
         dataSource = dataManager
-        delegate = dataManager
+        delegate = self
         titleText = "All Mailboxes"
         tableStyle = .insetGrouped
         super.viewDidLoad()
@@ -51,13 +51,19 @@ class MailboxesViewController: BaseTableViewController {
     }
 }
 
+extension MailboxesViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let mailboxID = dataManager.mailboxes[indexPath.section].id
+        guard let folder = dataManager.mailboxFolders[mailboxID]?.container.folders[indexPath.row]
+        else { return }
+
+        coordinator?.showFolder(folder.id, title: dataManager.name(of: folder))
+    }
+}
+
 extension MailboxesViewController: DataManagerDelegate {
     func dataUpdated() {
         tableView.reloadData()
-    }
-
-    func controllerDidSelect(_ item: Int, title: String) {
-        coordinator?.showFolder(item, title: title)
     }
 
     func tableViewHeightUpdated() {

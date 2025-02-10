@@ -7,12 +7,16 @@
 
 import UIKit
 
+/// A view controller responsible for displaying a list of conversations within a specific folder.
+///
+/// The `FolderViewController` manages the user interface for viewing and interacting with conversations.
+/// It integrates with the `FolderDataManager` to fetch and display the necessary data.
 class FolderViewController: BaseTableViewController {
     let dataManager = FolderDataManager.shared
 
     override func viewDidLoad() {
         dataSource = dataManager
-        delegate = dataManager
+        delegate = self
         super.viewDidLoad()
         dataManager.delegate = self
     }
@@ -51,13 +55,16 @@ class FolderViewController: BaseTableViewController {
     }
 }
 
+extension FolderViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let conversation = dataManager.conversations[indexPath.row]
+        coordinator?.showConversation(conversation.id, title: conversation.subject)
+    }
+}
+
 extension FolderViewController: DataManagerDelegate {
     func dataUpdated() {
         tableView.reloadData()
-    }
-
-    func controllerDidSelect(_ selection: Int, title: String) {
-        coordinator?.showConversation(selection, title: title)
     }
 
     func tableViewHeightUpdated() {

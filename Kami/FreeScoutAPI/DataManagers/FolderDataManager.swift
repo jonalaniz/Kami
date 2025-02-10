@@ -45,7 +45,7 @@ class FolderDataManager: BaseDataManager {
     }
 }
 
-extension FolderDataManager: UITableViewDataSource, UITableViewDelegate {
+extension FolderDataManager: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return conversations.count
     }
@@ -55,10 +55,6 @@ extension FolderDataManager: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let conversation = conversations[indexPath.row]
-        controllerDidSelect(conversation.id, title: conversation.subject)
-    }
     // MARK: - Helper Functions
     private func conversationCellFor(_ conversation: ConversationPreview, in tableView: UITableView) -> ConversationPreviewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPreviewCell.reuseIdentifier) as? ConversationPreviewCell

@@ -89,6 +89,12 @@ extension PreferencesViewController: UITableViewDelegate {
         return 44
     }
 
+    /// Creates a custom header or footer view for the table view.
+    ///
+    /// - Parameters:
+    ///   - label: The text to display in the header/footer.
+    ///   - type: The type of the view (header or footer).
+    /// - Returns: A custom `UIView` with the label and type configuration.
     private func headerFooterView(with label: String, type: HeaderFooterType) -> UIView {
         let view = HeaderFooterView()
         view.configure(label: label, type: type)
@@ -100,16 +106,12 @@ extension PreferencesViewController: DataManagerDelegate {
     // Called when the dataManager either updates the sign in status or
     // credentials are entered and are valid
     func dataUpdated() {
-        print("Data updated")
-
         // Update the right bar button item based on isSignedIn()
         updateRightBarButton()
 
-        // Update the tableView to be editable based on isSignedIn()
+        // Reload the tableview
         tableView.reloadData()
     }
-    
-    func controllerDidSelect(_ selection: Int, title: String) {}
-    
+        
     func tableViewHeightUpdated() {}
 }

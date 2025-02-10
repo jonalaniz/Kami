@@ -60,8 +60,6 @@ extension ConversationViewController: DataManagerDelegate {
         tableView.reloadData()
     }
     
-    func controllerDidSelect(_ selection: Int, title: String) {}
-
     func tableViewHeightUpdated() {
         DispatchQueue.main.async {
             self.tableView.beginUpdates()
