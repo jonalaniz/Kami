@@ -7,9 +7,17 @@
 
 import UIKit
 
+
+/// A custom table view cell that displays a preview of a conversation.
+///
+/// The `ConversationPreviewCell` is designed to show key information about a conversation,
+/// such as the sender, subject, preview text, and a visual indicator for its status.
 class ConversationPreviewCell: BaseTableViewCell {
+
+    /// The reuse identifier for this cell.
     static let reuseIdentifier = "ConversationPreviewCell"
-    
+
+    /// A label to display the name of the sender.
     private var senderLabel: UILabel = {
         let label = UILabel()
         label.textColor = .headerText
@@ -18,7 +26,8 @@ class ConversationPreviewCell: BaseTableViewCell {
         return label
     }()
 
-    private var timeLabel: UILabel = {
+    /// A label to display the timestamp of the conversation.
+    private var timeStampLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .subheadline)
         label.textAlignment = .right
@@ -26,6 +35,7 @@ class ConversationPreviewCell: BaseTableViewCell {
         return label
     }()
 
+    /// A label to display the subject of the conversation.
     private var subjectLabel: UILabel = {
         let label = UILabel()
         label.textColor = .headerText
@@ -34,6 +44,7 @@ class ConversationPreviewCell: BaseTableViewCell {
         return label
     }()
 
+    /// A label to display a preview of the conversation's content.
     private var previewLabel: UILabel = {
         let label = UILabel()
         label.textColor = .text
@@ -43,6 +54,7 @@ class ConversationPreviewCell: BaseTableViewCell {
         return label
     }()
 
+    /// A vertical stack view to organize the labels.
     private var stackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -51,17 +63,23 @@ class ConversationPreviewCell: BaseTableViewCell {
         return stackView
     }()
 
+    /// Configures the initial appearance and behavior of the cell.
+    ///
+    /// - Sets the accessory type to a disclosure indicator.
+    /// - Adds a custom selected background view.
     override func setupViews() {
-        selectedBackgroundView = SelectedView()
         accessoryType = .disclosureIndicator
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        selectedBackgroundView = SelectedView()
 
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.addArrangedSubview(senderLabel)
         stackView.addArrangedSubview(subjectLabel)
         stackView.addArrangedSubview(previewLabel)
+
         contentView.addSubview(stackView)
     }
 
+    /// Applies constraints to the views inside of the cell.
     override func setupConstraints() {
         NSLayoutConstraint.activate([
             stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -71,6 +89,10 @@ class ConversationPreviewCell: BaseTableViewCell {
         ])
     }
 
+    /// Configures the cell with the given conversation data.
+    ///
+    /// - Parameter conversation: A `ConversationPreview` object containing
+    ///   the sender, subject, preview, and status information.
     func configure(with conversation: ConversationPreview) {
         senderLabel.text = conversation.customer?.name()
         subjectLabel.text = conversation.subject
@@ -86,6 +108,10 @@ class ConversationPreviewCell: BaseTableViewCell {
         setBackgroundColor(for: status)
     }
 
+
+    /// Updates the cell's background color based on the conversation status.
+    ///
+    /// - Parameter status: The `ConversationStatus` value representing the conversation's current state.
     private func setBackgroundColor(for status: ConversationStatus) {
         switch status {
         case .active: backgroundColor = .activeCell
@@ -94,6 +120,7 @@ class ConversationPreviewCell: BaseTableViewCell {
     }
 }
 
+/// Enum representing the possible statuses of a conversation.
 enum ConversationStatus: String {
     case active = "active"
     case closed = "closed"

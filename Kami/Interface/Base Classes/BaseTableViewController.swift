@@ -7,6 +7,12 @@
 
 import UIKit
 
+
+/// A reusable base class for table view controllers.
+///
+/// `BaseTableViewController` simplifies the creation of table view controllers by
+/// managing common configurations such as navigation bar appearance, toolbar setup,
+/// table view initialization, and layout constraints. Subclass this to implement custom table views.
 class BaseTableViewController: UIViewController {
     weak var coordinator: MainCoordinator?
     var tableView: UITableView!
@@ -49,6 +55,7 @@ class BaseTableViewController: UIViewController {
         navigationController?.setToolbarHidden(false, animated: true)
     }
 
+    /// Initializes and configures the table view, setting its delegate, data source, and layout constraints.
     private func setupTableView() {
         tableView = UITableView(frame: .zero, style: tableStyle)
         tableView.backgroundColor = .background

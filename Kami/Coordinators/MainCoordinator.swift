@@ -15,6 +15,10 @@ class MainCoordinator: NSObject, Coordinator {
     let detailNavigationController: UINavigationController
     let detailViewController: FolderViewController
 
+
+    /// Initializes the `MainCoordinator` with the given split view controller.
+    ///
+    /// - Parameter splitViewController: The `UISplitViewController` instance to manage.
     init(splitViewController: UISplitViewController) {
         self.splitViewController = splitViewController
 
@@ -23,7 +27,9 @@ class MainCoordinator: NSObject, Coordinator {
         detailNavigationController = UINavigationController(rootViewController: detailViewController)
     }
 
-    // This is where we initialize the UISplitViewController
+    /// Starts the coordinator by configuring and displaying the split view interface.
+    ///
+    /// This method sets up the `mainViewController` and `detailViewController` within the `UISplitViewController` and establishes the initial navigation hierarchy.
     func start() {
         mainViewController.coordinator = self
 
@@ -33,6 +39,11 @@ class MainCoordinator: NSObject, Coordinator {
         splitViewController.viewControllers = [mainNavigationController, detailNavigationController]
     }
 
+    /// Displays a folder and its associated conversations in the detail view.
+    ///
+    /// - Parameters:
+    ///   - folder: The ID of the folder to display.
+    ///   - title: The title of the folder to display in the navigation bar.
     func showFolder(_ folder: Int, title: String) {
         detailViewController.titleText = title
         detailViewController.dataManager.clear()
@@ -42,25 +53,35 @@ class MainCoordinator: NSObject, Coordinator {
         if detailNavigationController.topViewController != detailViewController {
             detailNavigationController.setViewControllers([detailViewController], animated: true)
         }
+
         splitViewController.showDetailViewController(detailNavigationController, sender: nil)
     }
 
+    /// Displays a specific conversation in the detail navigation stack.
+    ///
+    /// - Parameters:
+    ///   - conversation: The ID of the conversation to display.
+    ///   - title: The title of the conversation to display in the navigation bar.
     func showConversation(_ conversation: Int, title: String) {
-        // Step 1: Instantiate the ConversationViewController
         let conversationViewController = ConversationViewController()
         conversationViewController.titleText = title
         conversationViewController.dataManager.clear()
         conversationViewController.dataManager.getConversation(conversation)
 
-        // Step 2: Push or replace the view controller in the detail navigation stack
         detailNavigationController.pushViewController(conversationViewController, animated: true)
     }
 
+    /// Presents the preferences screen as a modal popover.
+    ///
+    /// This method displays the `PreferencesViewController` in a navigation controller modally.
     func showPreferences() {
         let popoverNavigationController = UINavigationController(rootViewController: PreferencesViewController())
         splitViewController.present(popoverNavigationController, animated: true)
     }
 
+    /// Reloads the list of mailboxes in the main view.
+    ///
+    /// This method triggers a data fetch operation for the `MailboxesViewController` to update the mailbox list.
     func reloadMailboxes() {
         mainViewController.dataManager.getData()
     }
