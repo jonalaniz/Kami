@@ -38,6 +38,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, UISplitViewControllerDe
         // Set the window to the SplitViewController
         window.rootViewController = splitViewController
         window.makeKeyAndVisible()
+
+        // Check for secrets
+        coordinator?.loadSecret()
     }
 
     func splitViewController(_ splitViewController: UISplitViewController,

@@ -18,7 +18,7 @@ final class FreeScoutService {
     private init() {}
     
     func fetchConversations() async throws -> ConversationContainer {
-        guard let secret = configurator.getConfiguration()?.secret else {
+        guard let secret = configurator.secret else {
             throw APIManagerError.configurationMissing
         }
 
@@ -33,7 +33,7 @@ final class FreeScoutService {
     
     func fetchFolders(for mailbox: Int) async throws -> Folders {
         guard
-            let secret = configurator.getConfiguration()?.secret
+            let secret = configurator.secret
         else {
             throw APIManagerError.configurationMissing
         }
@@ -58,7 +58,7 @@ final class FreeScoutService {
 
     func fetchUsers() async throws -> Users {
         guard
-            let secret = configurator.getConfiguration()?.secret
+            let secret = configurator.secret
         else {
             throw APIManagerError.configurationMissing
         }
@@ -74,7 +74,7 @@ final class FreeScoutService {
 
     func fetchConversation(_ id: Int) async throws -> Conversation {
         guard
-            let secret = configurator.getConfiguration()?.secret
+            let secret = configurator.secret
         else {
             throw APIManagerError.configurationMissing
         }
@@ -108,11 +108,11 @@ final class FreeScoutService {
     }
     
     func isConfigured() -> Bool {
-        return configurator.getConfiguration() != nil
+        return configurator.secret != nil
     }
     
     func urlFor(_ conversation: Int) -> URL? {
-        let secret = configurator.getConfiguration()?.secret
+        let secret = configurator.secret
         var components = URLComponents(url: (secret?.url)!, resolvingAgainstBaseURL: false)
         components?.path += "conversation/\(conversation)"
                 

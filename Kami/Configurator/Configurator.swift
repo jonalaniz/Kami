@@ -9,6 +9,7 @@ import Foundation
 
 protocol ConfiguratorDelegate: AnyObject {
     func configurationChanged()
+    func loadedSecret(_ secret: Secret)
 }
 
 /// A singleton responsible for managing application configuration and secure secrets.
@@ -42,6 +43,7 @@ final class Configurator {
     func save(secret: Secret) {
         do {
             try secretManager.save(secret)
+            // TODO: Call the delegate and send the secret to be seeded
         } catch {
             print("Unable to save secrets")
         }

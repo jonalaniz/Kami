@@ -14,6 +14,8 @@ class MainCoordinator: NSObject, Coordinator {
     let detailNavigationController: UINavigationController
     let detailViewController: FolderViewController
 
+    private let configurator = Configurator.shared
+
     var childCoordinators = [Coordinator]()
     var splitViewController: UISplitViewController
 
@@ -31,15 +33,29 @@ class MainCoordinator: NSObject, Coordinator {
     }
 
     func start() {
-        // TODO: Call the Credentials Manager and see if there is a valid key
-
-        // TODO: Depending if there is a key, either show the loading/sync view or login view
+        // TODO: Seed our DataSyncManager with data
         mainViewController.coordinator = self
 
         // Initialize our SplitView
         let mainNavigationController = UINavigationController(rootViewController: mainViewController)
         detailNavigationController.viewControllers = [detailViewController]
         splitViewController.viewControllers = [mainNavigationController, detailNavigationController]
+    }
+
+    func loadSecret() {
+        // TODO: Call the Credentials Manager and see if there is a valid key
+        guard let secret = configurator.secret else {
+            print("no secrets")
+            showLoginView()
+            showPreferences()
+            return
+        }
+
+        // TODO: Seed the DataSyncManager
+    }
+
+    func showLoginView() {
+
     }
 
     /// Displays a folder and its associated conversations in the detail view.
@@ -78,6 +94,7 @@ class MainCoordinator: NSObject, Coordinator {
     ///
     /// This method displays the `PreferencesViewController` in a navigation controller modally.
     func showPreferences() {
+        print("showPreferencesCalled")
         let popoverNavigationController = UINavigationController(rootViewController: PreferencesViewController())
         splitViewController.present(popoverNavigationController, animated: true)
     }

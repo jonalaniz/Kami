@@ -20,7 +20,7 @@ class MailboxDataManager: BaseDataManager {
     }
 
     func getData() {
-        guard let secret = configurator.getConfiguration()?.secret else { return  }
+        guard let secret = configurator.secret else { return  }
         Task {
             do {
                 let usersContainer = try await service.fetchUsers()

@@ -29,9 +29,9 @@ class PreferencesDataManager: BaseDataManager {
 
     private init() {
         super.init()
-        configuration = configurator.getConfiguration()
-        urlString = configuration?.secret.url.absoluteString
-        key = configuration?.secret.key
+        configuration = configurator.configuration
+        urlString = configurator.secret?.url.absoluteString
+        key = configurator.secret?.key
     }
 
     @objc func inputText(_ sender: UITextField) {
@@ -49,9 +49,6 @@ class PreferencesDataManager: BaseDataManager {
     }
 
     func hasValidCredentials() -> Bool {
-        // Return true if we have a valid address and API key
-        print("Key: \(key): \(isValidKey(key))")
-        print("URL: \(urlString): \(isValidURL(urlString))")
         return isValidKey(key) && isValidURL(urlString) == true
     }
 
@@ -61,14 +58,8 @@ class PreferencesDataManager: BaseDataManager {
         // at the server and get a 200 response
 
         // Save the data
-        let secret = Configuration.Secret(url: URL(string: urlString!)!, key: key!)
-        configurator.saveConfiguration(Configuration(secret: secret))
-
-        // Reload the data
-        configuration = configurator.getConfiguration()
-
-        // Check if you can grab the data else error out
-        guard configuration != nil else { return }
+        let secret = Secret(url: URL(string: urlString!)!, key: key!)
+        configurator.save(secret: secret)
 
         // Notify the delegate
         delegate?.dataUpdated()
@@ -77,7 +68,7 @@ class PreferencesDataManager: BaseDataManager {
     func signOut() {
         key = nil
         urlString = nil
-        configurator.signOut()
+        configurator.deleteSecret()
         configuration = nil
         delegate?.dataUpdated()
     }
@@ -94,8 +85,6 @@ class PreferencesDataManager: BaseDataManager {
         else { return false }
         return true
     }
-
-    // TODO: Add a clear function to clear out passwords from memory
 }
 
 extension PreferencesDataManager: UITableViewDataSource {
@@ -134,10 +123,10 @@ extension PreferencesDataManager: UITableViewDataSource {
         switch row {
         case .url:
             type = .URL
-            content = configuration?.secret.url.absoluteString
+            content = configurator.secret?.url.absoluteString
         case .apiKey:
             type = .password
-            content = configuration?.secret.key
+            content = configurator.secret?.key
         }
 
         return createInputCell(type: type, content: content)
