@@ -8,13 +8,16 @@
 import UIKit
 
 class MainCoordinator: NSObject, Coordinator {
-    var childCoordinators = [Coordinator]()
-    var splitViewController: UISplitViewController
+    // MARK: - Properties
 
     let mainViewController: MailboxesViewController
     let detailNavigationController: UINavigationController
     let detailViewController: FolderViewController
 
+    var childCoordinators = [Coordinator]()
+    var splitViewController: UISplitViewController
+
+    // MARK: - Lifecycle
 
     /// Initializes the `MainCoordinator` with the given split view controller.
     ///
@@ -27,10 +30,10 @@ class MainCoordinator: NSObject, Coordinator {
         detailNavigationController = UINavigationController(rootViewController: detailViewController)
     }
 
-    /// Starts the coordinator by configuring and displaying the split view interface.
-    ///
-    /// This method sets up the `mainViewController` and `detailViewController` within the `UISplitViewController` and establishes the initial navigation hierarchy.
     func start() {
+        // TODO: Call the Credentials Manager and see if there is a valid key
+
+        // TODO: Depending if there is a key, either show the loading/sync view or login view
         mainViewController.coordinator = self
 
         // Initialize our SplitView

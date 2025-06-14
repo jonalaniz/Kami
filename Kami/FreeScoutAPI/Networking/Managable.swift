@@ -12,12 +12,5 @@ protocol Managable {
                              httpMethod: ServiceMethod,
                              body: Data?,
                              headers: [String:String]?,
-                             expectingReturnType: T.Type
     ) async throws -> T
-
-    func genericRequest(url: URL,
-                        httpMethod: ServiceMethod,
-                        body: Data?,
-                        headers: [String: String]?
-    ) async throws -> Data
 }

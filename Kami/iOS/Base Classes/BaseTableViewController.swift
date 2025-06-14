@@ -14,6 +14,8 @@ import UIKit
 /// managing common configurations such as navigation bar appearance, toolbar setup,
 /// table view initialization, and layout constraints. Subclass this to implement custom table views.
 class BaseTableViewController: UIViewController {
+    // MARK: - Properties
+
     weak var coordinator: MainCoordinator?
     var tableView: UITableView!
     var dataSource: UITableViewDataSource?
@@ -22,6 +24,8 @@ class BaseTableViewController: UIViewController {
     var tableStyle: UITableView.Style = .plain
     var toolbarColor: UIColor = .subHeaderToolbar
     var toolbarTint: UIColor = .iconsTexts
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +42,8 @@ class BaseTableViewController: UIViewController {
         else { return }
         tableView.deselectRow(at: indexPath, animated: true)
     }
+
+    // MARK: - Configuration
 
     func setupView() {
         if let titleText = titleText { title = titleText }
@@ -68,6 +74,8 @@ class BaseTableViewController: UIViewController {
     }
 
     func registerCells() {}
+
+    // MARK: - Helper Functions
 
     private func activateFullScreenConstraints(for subview: UIView) {
         NSLayoutConstraint.activate([

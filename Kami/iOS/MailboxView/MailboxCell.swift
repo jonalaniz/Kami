@@ -13,7 +13,6 @@ import UIKit
 /// that it can be tapped to reveal more details. It includes a disclosure indicator
 /// and custom styling.
 class MailboxCell: BaseTableViewCell {
-
     /// The reuse identifier for this cell.
     static let reuseIdentifier = "MailboxCell"
 
