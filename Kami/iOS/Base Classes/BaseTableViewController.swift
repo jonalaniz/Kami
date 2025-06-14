@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 /// A reusable base class for table view controllers.
 ///
 /// `BaseTableViewController` simplifies the creation of table view controllers by

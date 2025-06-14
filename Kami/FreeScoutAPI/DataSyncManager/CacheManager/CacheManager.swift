@@ -48,7 +48,7 @@ final class CacheManager {
     }
 
     private func createDirectoryIfNeeded() throws {
-        if !fileManager.fileExists(atPath: cacheDirectory.path()) {
+        if !fileManager.fileExists(atPath: cacheDirectory.path(percentEncoded: true)) {
             try fileManager.createDirectory(
                 at: cacheDirectory,
                 withIntermediateDirectories: true

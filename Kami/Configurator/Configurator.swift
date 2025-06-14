@@ -75,7 +75,7 @@ final class Configurator {
                 from: data
             )
             self.configuration = configuration
-        } catch  {
+        } catch {
             // TODO: This will go to Configurator Error
             print(error)
         }

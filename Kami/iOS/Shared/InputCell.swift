@@ -33,7 +33,6 @@ class InputCell: BaseTableViewCell {
         fatalError(Constants.errorInitCoder)
     }
 
-
     /// Sets up the views within the cell.
     ///
     /// This method:

@@ -7,6 +7,7 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
 class ConversationDataManager: BaseDataManager {
     static let shared = ConversationDataManager(
         configurator: Configurator.shared,
@@ -64,8 +65,13 @@ extension ConversationDataManager: UITableViewDataSource, UITableViewDelegate {
     }
 
     // MARK: - Helper Functions
-    private func headerCellFor(_ thread: Thread, in tableView: UITableView) -> ConversationHeaderCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationHeaderCell.reuseIdentifier) as? ConversationHeaderCell
+    private func headerCellFor(
+        _ thread: Thread,
+        in tableView: UITableView
+    ) -> ConversationHeaderCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ConversationHeaderCell.reuseIdentifier
+        ) as? ConversationHeaderCell
         else { fatalError("DequeueReusableCell failed while casting as ConversationHeaderCell") }
 
         cell.configure(sender: thread.createdBy?.name() ?? "",
@@ -77,8 +83,13 @@ extension ConversationDataManager: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 
-    private func bodyCellFor(_ thread: Thread, in tableView: UITableView) -> ConversationBodyCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationBodyCell.reuseIdentifier) as? ConversationBodyCell
+    private func bodyCellFor(
+        _ thread: Thread,
+        in tableView: UITableView
+    ) -> ConversationBodyCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ConversationBodyCell.reuseIdentifier
+        ) as? ConversationBodyCell
         else { fatalError("DequeueReusableCell failed while casting as ConversationBodyCell") }
 
         if let body = thread.body {
@@ -96,4 +107,3 @@ extension ConversationDataManager: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 }
-

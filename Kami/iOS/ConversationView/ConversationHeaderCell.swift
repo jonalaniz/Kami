@@ -7,9 +7,10 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
 class ConversationHeaderCell: BaseTableViewCell {
     static let reuseIdentifier = "ConversationHeaderCell"
-    
+
     private var senderLabel: UILabel = {
         let label = UILabel()
         label.textColor = .headerText
@@ -105,8 +106,11 @@ class ConversationHeaderCell: BaseTableViewCell {
         dateLabel.text = date.formattedDate()
 
         let toText: String
-        if let to = to { toText = "To: " +  to.joined(separator: ", ") }
-        else { toText = "" }
+        if let to = to {
+            toText = "To: " +  to.joined(separator: ", ")
+        } else {
+            toText = ""
+        }
         toLabel.text = toText
 
         statusLabel.text = status

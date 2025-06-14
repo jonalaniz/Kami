@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
 enum Endpoint {
     case conversation(Int)
     case conversations
@@ -16,7 +17,7 @@ enum Endpoint {
 
     var path: String {
         var endpoint: String
-        
+
         switch self {
         case .conversation(let id): endpoint = "api/conversations/\(id)"
         case .conversations: endpoint = "/api/conversations"
@@ -24,7 +25,7 @@ enum Endpoint {
         case .mailbox: endpoint = "/api/mailboxes"
         case .users: endpoint = "/api/users"
         }
-        
+
         return endpoint
     }
 }

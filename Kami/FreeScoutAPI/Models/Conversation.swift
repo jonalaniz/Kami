@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
 struct Conversation: Codable {
     let id, number, threadsCount: Int
     let type: String
@@ -45,8 +46,6 @@ struct CustomField: Codable {
     let name, value, text: String
 }
 
-
-
 struct EmbeddedThreads: Codable {
     let threads: [Thread]
 }
@@ -66,7 +65,8 @@ struct Thread: Codable {
     let embedded: ThreadEmbedded
 
     enum CodingKeys: String, CodingKey {
-        case id, type, status, state, action, body, source, customer, createdBy, assignedTo, to, cc, bcc, createdAt, openedAt
+        case id, type, status, state, action, body, source, customer
+        case createdBy, assignedTo, to, cc, bcc, createdAt, openedAt
         case embedded = "_embedded"
     }
 }

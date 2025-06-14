@@ -59,7 +59,7 @@ extension ConversationViewController: DataManagerDelegate {
     func dataUpdated() {
         tableView.reloadData()
     }
-    
+
     func tableViewHeightUpdated() {
         DispatchQueue.main.async {
             self.tableView.beginUpdates()

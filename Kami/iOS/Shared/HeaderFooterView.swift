@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 /// An enum representing the type of the header or footer view.
 enum HeaderFooterType {
     case header

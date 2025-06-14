@@ -120,18 +120,16 @@ extension MainCoordinator: DataSyncManagerDelegate {
     func mailboxesDidLoad(_ result: MailboxSyncResult) {
         mainViewController.reloadData(result)
     }
-    
+
     func syncDidStart() {
         print("sync did start")
     }
-    
+
     func syncDidFinish() {
         print("sync did finish")
     }
-    
+
     func syncDidFail(with error: any Error) {
         print("sync did fail")
     }
-    
-
 }

@@ -62,8 +62,13 @@ extension FolderDataManager: UITableViewDataSource {
     }
 
     // MARK: - Helper Functions
-    private func conversationCellFor(_ conversation: ConversationPreview, in tableView: UITableView) -> ConversationPreviewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConversationPreviewCell.reuseIdentifier) as? ConversationPreviewCell
+    private func conversationCellFor(
+        _ conversation: ConversationPreview,
+        in tableView: UITableView
+    ) -> ConversationPreviewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ConversationPreviewCell.reuseIdentifier
+        ) as? ConversationPreviewCell
         else { fatalError("DequeueReusableCell failed while casting as ConversationCell") }
 
         cell.configure(with: conversation)

@@ -22,7 +22,7 @@ class BaseDataManager: NSObject {
     /// - Parameters:
     ///   - configurator: The configurator responsible for managing app configurations. Defaults to
     ///   `Configurator.shared`.
-    ///   - service: The FreeScout service responsible for handling network requests. Defaults to `FreeScoutService.shared`.
+    ///   - service: The service responsible for handling network requests. Defaults to `FreeScoutService.shared`.
     init(configurator: Configurator = Configurator.shared, service: FreeScoutService = FreeScoutService.shared) {
         self.configurator = configurator
         self.service = service

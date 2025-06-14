@@ -27,7 +27,11 @@ class PreferencesViewController: BaseTableViewController {
     override func setupView() {
         super.setupView()
         navigationItem.largeTitleDisplayMode = .never
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .cancel,
+            target: self,
+            action: #selector(cancel)
+        )
         updateRightBarButton()
     }
 
@@ -112,6 +116,6 @@ extension PreferencesViewController: DataManagerDelegate {
         // Reload the tableview
         tableView.reloadData()
     }
-        
+
     func tableViewHeightUpdated() {}
 }

@@ -11,6 +11,6 @@ protocol Managable {
     func request<T: Codable>(url: URL,
                              httpMethod: ServiceMethod,
                              body: Data?,
-                             headers: [String:String]?,
+                             headers: [String: String]?,
     ) async throws -> T
 }

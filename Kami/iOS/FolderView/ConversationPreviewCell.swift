@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 /// A custom table view cell that displays a preview of a conversation.
 ///
 /// The `ConversationPreviewCell` is designed to show key information about a conversation,
@@ -108,7 +107,6 @@ class ConversationPreviewCell: BaseTableViewCell {
         setBackgroundColor(for: status)
     }
 
-
     /// Updates the cell's background color based on the conversation status.
     ///
     /// - Parameter status: The `ConversationStatus` value representing the conversation's current state.
@@ -122,8 +120,8 @@ class ConversationPreviewCell: BaseTableViewCell {
 
 /// Enum representing the possible statuses of a conversation.
 enum ConversationStatus: String {
-    case active = "active"
-    case closed = "closed"
-    case pending = "pending"
-    case spam = "spam"
+    case active
+    case closed
+    case pending
+    case spam
 }

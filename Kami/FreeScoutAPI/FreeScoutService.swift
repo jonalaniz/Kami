@@ -7,15 +7,16 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
 final class FreeScoutService {
     static let shared = FreeScoutService()
-    
+
     private let apiManager = APIManager.shared
 
     private var folders = [Folder]()
-    
+
     private init() {}
-    
+
     func fetchConversations(using secret: Secret) async throws -> ConversationContainer {
         var urlWithEndpoint = secret.url.appendingPathComponentSafely(
             Endpoint.conversations.path
@@ -30,7 +31,7 @@ final class FreeScoutService {
             headers: defaultHeaders(withKey: secret.key)
         )
     }
-    
+
     func fetchFolders(for mailbox: Int, using secret: Secret) async throws -> Folders {
         let urlWithEndpoint = secret.url.appendingPathComponentSafely(
             Endpoint.folders(mailbox).path
@@ -42,7 +43,7 @@ final class FreeScoutService {
             headers: defaultHeaders(withKey: secret.key)
         )
     }
-    
+
     func fetchMailboxes(using secret: Secret) async throws -> MailboxContainer {
         let urlWithEndpoint = secret.url.appendingPathComponentSafely(
             Endpoint.mailbox.path
@@ -65,7 +66,10 @@ final class FreeScoutService {
                                             headers: defaultHeaders(withKey: secret.key))
     }
 
-    func fetchConversation(_ id: Int, using secret: Secret) async throws -> Conversation {
+    func fetchConversation(
+        _ id: Int,
+        using secret: Secret
+    ) async throws -> Conversation {
         let urlWithEndpoint = secret.url.appendingPathComponentSafely(
             Endpoint.conversation(id).path
         )
@@ -86,14 +90,14 @@ final class FreeScoutService {
     func mainFolders() -> [Folder] {
         return folders.filter { $0.userId == nil }
     }
-    
+
     private func defaultHeaders(withKey key: String) -> [String: String] {
         let headers: [String: String] = [
             HeaderKeyValue.apiKey.rawValue: key,
             HeaderKeyValue.accept.rawValue: HeaderKeyValue.applicationJSON.rawValue,
             HeaderKeyValue.contentType.rawValue: HeaderKeyValue.jsonCharset.rawValue
         ]
-        
+
         return headers
     }
 }

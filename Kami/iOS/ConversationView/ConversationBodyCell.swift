@@ -10,7 +10,7 @@ import WebKit
 
 class ConversationBodyCell: BaseTableViewCell {
     static let reuseIdentifier = "ConversationBodyCell"
-    
+
     private let webView: WKWebView = {
         let webView = WKWebView()
         webView.scrollView.isScrollEnabled = false
@@ -79,8 +79,11 @@ extension ConversationBodyCell: WKNavigationDelegate {
             onHeightChange?()
         }
     }
-    
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction
+    ) async -> WKNavigationActionPolicy {
         guard let url = navigationAction.request.url,
               navigationAction.navigationType == .linkActivated
         else { return .allow }

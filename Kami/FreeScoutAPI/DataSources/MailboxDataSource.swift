@@ -7,6 +7,7 @@
 
 import UIKit
 
+// swiftlint:disable identifier_name
 final class MailboxDataSource: NSObject, UITableViewDataSource {
     private var mailboxes = [Mailbox]()
     private var mailboxFolders = [Int: Folders]()
