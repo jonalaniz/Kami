@@ -34,6 +34,7 @@ class MailboxCell: BaseTableViewCell {
         var configuration = defaultContentConfiguration()
         configuration.text = name
         configuration.textProperties.color = .headerText
+        configuration.textProperties.numberOfLines = 1
 
         contentConfiguration = configuration
     }

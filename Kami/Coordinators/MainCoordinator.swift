@@ -44,7 +44,7 @@ class MainCoordinator: NSObject, Coordinator {
         splitViewController.viewControllers = [mainNavigationController, detailNavigationController]
     }
 
-    func loadSecret() {
+    @MainActor func loadSecret() {
         // Call the Credentials Manager and see if there is a valid key
         guard let secret = configurator.secret else {
             print("no secrets")
@@ -107,12 +107,16 @@ class MainCoordinator: NSObject, Coordinator {
     /// Reloads the list of mailboxes in the main view.
     ///
     /// This method triggers a data fetch operation for the `MailboxesViewController` to update the mailbox list.
-    func reloadMailboxes() {
+    @MainActor func reloadMailboxes() {
         dataSyncManager.syncMailboxStructure()
     }
 }
 
 extension MainCoordinator: DataSyncManagerDelegate {
+    func mailboxCacheLoaded(_ result: MailboxSyncResult) {
+        mainViewController.loadDataSource(result)
+    }
+
     func mailboxesDidLoad(_ result: MailboxSyncResult) {
         mainViewController.reloadData(result)
     }

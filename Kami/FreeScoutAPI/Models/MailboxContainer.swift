@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MailboxContainer: Codable {
+struct MailboxContainer: Codable, Equatable {
     let embeddedMailboxes: EmbeddedMailboxes
     let page: Page
     
@@ -22,11 +22,11 @@ struct MailboxContainer: Codable {
     }
 }
 
-struct EmbeddedMailboxes: Codable {
+struct EmbeddedMailboxes: Codable, Equatable {
     let mailboxes: [Mailbox]
 }
 
-struct Mailbox: Codable {
+struct Mailbox: Codable, Equatable {
     let id: Int
     let name: String
     let email: String

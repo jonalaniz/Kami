@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Page: Codable {
+struct Page: Codable, Equatable {
     let size: Int
     let totalElements: Int
     let totalPages: Int

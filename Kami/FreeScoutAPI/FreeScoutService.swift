@@ -96,12 +96,4 @@ final class FreeScoutService {
         
         return headers
     }
-    
-//    func urlFor(_ conversation: Int) -> URL? {
-//        let secret = configurator.secret
-//        var components = URLComponents(url: (secret?.url)!, resolvingAgainstBaseURL: false)
-//        components?.path += "conversation/\(conversation)"
-//                
-//        return components?.url
-//    }
 }

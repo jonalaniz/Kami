@@ -13,6 +13,7 @@ protocol DataSyncManagerDelegate: AnyObject {
     func syncDidFinish()
     func syncDidFail(with error: Error)
     func mailboxesDidLoad(_ result: MailboxSyncResult)
+    func mailboxCacheLoaded(_ result: MailboxSyncResult)
 }
 
 class DataSyncManager: NSObject {
@@ -24,6 +25,7 @@ class DataSyncManager: NSObject {
 
     // MARK: - Properties
 
+    private let cacheManager = CacheManager.shared
     private let service = FreeScoutService.shared
 
     weak var delegate: DataSyncManagerDelegate?
@@ -34,9 +36,12 @@ class DataSyncManager: NSObject {
     private var mailboxFolders = [Int: Folders]()
     private var users = [User]()
 
-    func syncMailboxStructure() {
+    @MainActor func syncMailboxStructure() {
         guard let secret = secret else { return }
         guard !isSyncing else { return }
+
+        loadMailboxesFromCache()
+
         isSyncing = true
         delegate?.syncDidStart()
 
@@ -69,7 +74,16 @@ class DataSyncManager: NSObject {
                     folders: mailboxFolders,
                     users: users
                 )
-                await mailboxesDidLoad(result)
+
+                let cache = MailboxCache(
+                    mailboxes: mailboxes,
+                    folders: mailboxFolders,
+                    users: users,
+                    timestamp: Date()
+                )
+
+                saveToCache(cache)
+                mailboxesDidLoad(result)
             } catch {
                 print(error)
             }
@@ -81,8 +95,35 @@ class DataSyncManager: NSObject {
         return mailboxFolders[mailbox.id]?.container.folders[row]
     }
 
+    private func loadMailboxesFromCache() {
+        // Check cache first
+        if let cached = cacheManager.load(
+            MailboxCache.self,
+            from: "mailboxes.json"
+        ) {
+            mailboxes = cached.mailboxes
+            mailboxFolders = cached.folders
+            users = cached.users
+            mailboxCacheUpdated(
+                MailboxSyncResult(
+                    mailboxes: mailboxes,
+                    folders: mailboxFolders,
+                    users: users
+                )
+            )
+        }
+    }
+
+    private func saveToCache(_ cache: MailboxCache) {
+        cacheManager.save(cache, as: "mailboxes.json")
+    }
+
     @MainActor
     private func mailboxesDidLoad(_ result: MailboxSyncResult) {
         delegate?.mailboxesDidLoad(result)
+    }
+
+    private func mailboxCacheUpdated(_ result: MailboxSyncResult) {
+        delegate?.mailboxCacheLoaded(result)
     }
 }

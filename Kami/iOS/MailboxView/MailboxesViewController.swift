@@ -45,13 +45,22 @@ class MailboxesViewController: BaseTableViewController {
         coordinator?.showPreferences()
     }
 
-    func reloadData(_ result: MailboxSyncResult) {
+    func loadDataSource(_ result: MailboxSyncResult) {
         mailboxesDataSource.update(
             mailboxes: result.mailboxes,
             folders: result.folders,
             users: result.users
         )
+    }
+
+    func reloadData(_ result: MailboxSyncResult) {
+        loadDataSource(result)
+        print(tableView.contentSize)
+        print(tableView.frame)
         tableView.reloadData()
+        print(tableView.contentSize)
+        print(tableView.frame)
+
     }
 
     private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
@@ -67,18 +76,5 @@ class MailboxesViewController: BaseTableViewController {
 extension MailboxesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         coordinator?.showFolder(section: indexPath.section, row: indexPath.row)
-        // TODO: Add folder selection
     }
 }
-
-extension MailboxesViewController: DataManagerDelegate {
-    func dataUpdated() {
-        tableView.reloadData()
-    }
-
-    func tableViewHeightUpdated() {
-        self.tableView.beginUpdates()
-        self.tableView.endUpdates()
-    }
-}
-
