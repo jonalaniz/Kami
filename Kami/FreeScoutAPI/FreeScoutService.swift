@@ -11,76 +11,64 @@ final class FreeScoutService {
     static let shared = FreeScoutService()
     
     private let apiManager = APIManager.shared
-    private let configurator = Configurator.shared
-        
+
     private var folders = [Folder]()
     
     private init() {}
     
-    func fetchConversations() async throws -> ConversationContainer {
-        guard let secret = configurator.secret else {
-            throw APIManagerError.configurationMissing
-        }
-
-        var urlWithEndpoint = secret.url.appendingPathComponentSafely(Endpoint.conversations.path)
-        urlWithEndpoint.append(queryItems: [URLQueryItem(name: "pageSize", value: "200")])
-
-        return try await apiManager.request(url: urlWithEndpoint,
-                                            httpMethod: .get,
-                                            body: nil,
-                                            headers: defaultHeaders(withKey: secret.key))
+    func fetchConversations(using secret: Secret) async throws -> ConversationContainer {
+        var urlWithEndpoint = secret.url.appendingPathComponentSafely(
+            Endpoint.conversations.path
+        )
+        urlWithEndpoint.append(
+            queryItems: [URLQueryItem(name: "pageSize", value: "200")]
+        )
+        return try await apiManager.request(
+            url: urlWithEndpoint,
+            httpMethod: .get,
+            body: nil,
+            headers: defaultHeaders(withKey: secret.key)
+        )
     }
     
-    func fetchFolders(for mailbox: Int) async throws -> Folders {
-        guard
-            let secret = configurator.secret
-        else {
-            throw APIManagerError.configurationMissing
-        }
-
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(Endpoint.folders(mailbox).path)
-
-        return try await apiManager.request(url: urlWithEndpoint,
-                                            httpMethod: .get,
-                                            body: nil,
-                                            headers: defaultHeaders(withKey: secret.key))
+    func fetchFolders(for mailbox: Int, using secret: Secret) async throws -> Folders {
+        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
+            Endpoint.folders(mailbox).path
+        )
+        return try await apiManager.request(
+            url: urlWithEndpoint,
+            httpMethod: .get,
+            body: nil,
+            headers: defaultHeaders(withKey: secret.key)
+        )
     }
     
-    func fetchMailboxes(key: String,
-                        url: URL) async throws -> MailboxContainer {
-        let urlWithEndpoint = url.appendingPathComponentSafely(Endpoint.mailbox.path)
-        
-        return try await apiManager.request(url: urlWithEndpoint,
-                                            httpMethod: .get,
-                                            body: nil,
-                                            headers: defaultHeaders(withKey: key))
+    func fetchMailboxes(using secret: Secret) async throws -> MailboxContainer {
+        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
+            Endpoint.mailbox.path
+        )
+        return try await apiManager.request(
+            url: urlWithEndpoint,
+            httpMethod: .get,
+            body: nil,
+            headers: defaultHeaders(withKey: secret.key)
+        )
     }
 
-    func fetchUsers() async throws -> Users {
-        guard
-            let secret = configurator.secret
-        else {
-            throw APIManagerError.configurationMissing
-        }
-
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(Endpoint.users.path)
-
-
+    func fetchUsers(using secret: Secret) async throws -> Users {
+        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
+            Endpoint.users.path
+        )
         return try await apiManager.request(url: urlWithEndpoint,
                                             httpMethod: .get,
                                             body: nil,
                                             headers: defaultHeaders(withKey: secret.key))
     }
 
-    func fetchConversation(_ id: Int) async throws -> Conversation {
-        guard
-            let secret = configurator.secret
-        else {
-            throw APIManagerError.configurationMissing
-        }
-
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(Endpoint.conversation(id).path)
-
+    func fetchConversation(_ id: Int, using secret: Secret) async throws -> Conversation {
+        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
+            Endpoint.conversation(id).path
+        )
         return try await apiManager.request(
             url: urlWithEndpoint,
             httpMethod: .get,
@@ -90,7 +78,9 @@ final class FreeScoutService {
     }
 
     func set(_ folders: Folders) {
-        self.folders = folders.container.folders.sorted(by: { $0.id < $1.id })
+        self.folders = folders.container.folders.sorted(
+            by: { $0.id < $1.id }
+        )
     }
 
     func mainFolders() -> [Folder] {
@@ -107,15 +97,11 @@ final class FreeScoutService {
         return headers
     }
     
-    func isConfigured() -> Bool {
-        return configurator.secret != nil
-    }
-    
-    func urlFor(_ conversation: Int) -> URL? {
-        let secret = configurator.secret
-        var components = URLComponents(url: (secret?.url)!, resolvingAgainstBaseURL: false)
-        components?.path += "conversation/\(conversation)"
-                
-        return components?.url
-    }
+//    func urlFor(_ conversation: Int) -> URL? {
+//        let secret = configurator.secret
+//        var components = URLComponents(url: (secret?.url)!, resolvingAgainstBaseURL: false)
+//        components?.path += "conversation/\(conversation)"
+//                
+//        return components?.url
+//    }
 }

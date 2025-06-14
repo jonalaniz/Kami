@@ -8,16 +8,14 @@
 import UIKit
 
 class MailboxesViewController: BaseTableViewController {
-    let dataManager = MailboxDataManager.shared
+    let mailboxesDataSource = MailboxDataSource()
 
     override func viewDidLoad() {
-        dataSource = dataManager
+        dataSource = mailboxesDataSource
         delegate = self
         titleText = "All Mailboxes"
         tableStyle = .insetGrouped
         super.viewDidLoad()
-        dataManager.delegate = self
-        dataManager.getData()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -28,13 +26,17 @@ class MailboxesViewController: BaseTableViewController {
     }
 
     override func registerCells() {
-        tableView.register(MailboxCell.self,
-                           forCellReuseIdentifier: MailboxCell.reuseIdentifier)
+        tableView.register(
+            MailboxCell.self,
+            forCellReuseIdentifier: MailboxCell.reuseIdentifier
+        )
     }
 
     override func setupView() {
         super.setupView()
-        navigationItem.leftBarButtonItem = barButtonItem(.preferences, action: #selector(showPreferences))
+        navigationItem.leftBarButtonItem = barButtonItem(
+            .preferences, action: #selector(showPreferences)
+        )
     }
 
     override func setupToolbar() {}
@@ -43,21 +45,29 @@ class MailboxesViewController: BaseTableViewController {
         coordinator?.showPreferences()
     }
 
+    func reloadData(_ result: MailboxSyncResult) {
+        mailboxesDataSource.update(
+            mailboxes: result.mailboxes,
+            folders: result.folders,
+            users: result.users
+        )
+        tableView.reloadData()
+    }
+
     private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
-        return UIBarButtonItem(image: symbol.image(),
-                               style: .plain,
-                               target: self,
-                               action: action)
+        return UIBarButtonItem(
+            image: symbol.image(),
+            style: .plain,
+            target: self,
+            action: action
+        )
     }
 }
 
 extension MailboxesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let mailboxID = dataManager.mailboxes[indexPath.section].id
-        guard let folder = dataManager.mailboxFolders[mailboxID]?.container.folders[indexPath.row]
-        else { return }
-
-        coordinator?.showFolder(folder.id, title: dataManager.name(of: folder))
+        coordinator?.showFolder(section: indexPath.section, row: indexPath.row)
+        // TODO: Add folder selection
     }
 }
 

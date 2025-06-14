@@ -5,7 +5,7 @@
 //  Created by Jon Alaniz on 12/11/24.
 //
 
-import Foundation
+import UIKit
 
 class BaseDataManager: NSObject {
     /// A shared instance of `Configurator` that handles app and authentication specific configurations.

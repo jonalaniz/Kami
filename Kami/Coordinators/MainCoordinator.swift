@@ -15,6 +15,7 @@ class MainCoordinator: NSObject, Coordinator {
     let detailViewController: FolderViewController
 
     private let configurator = Configurator.shared
+    private let dataSyncManager = DataSyncManager.shared
 
     var childCoordinators = [Coordinator]()
     var splitViewController: UISplitViewController
@@ -33,8 +34,9 @@ class MainCoordinator: NSObject, Coordinator {
     }
 
     func start() {
-        // TODO: Seed our DataSyncManager with data
+        // Set our delegates/coordinators
         mainViewController.coordinator = self
+        dataSyncManager.delegate = self
 
         // Initialize our SplitView
         let mainNavigationController = UINavigationController(rootViewController: mainViewController)
@@ -43,7 +45,7 @@ class MainCoordinator: NSObject, Coordinator {
     }
 
     func loadSecret() {
-        // TODO: Call the Credentials Manager and see if there is a valid key
+        // Call the Credentials Manager and see if there is a valid key
         guard let secret = configurator.secret else {
             print("no secrets")
             showLoginView()
@@ -51,7 +53,9 @@ class MainCoordinator: NSObject, Coordinator {
             return
         }
 
-        // TODO: Seed the DataSyncManager
+        // Seed the DataSyncManager
+        dataSyncManager.secret = secret
+        dataSyncManager.syncMailboxStructure()
     }
 
     func showLoginView() {
@@ -63,10 +67,11 @@ class MainCoordinator: NSObject, Coordinator {
     /// - Parameters:
     ///   - folder: The ID of the folder to display.
     ///   - title: The title of the folder to display in the navigation bar.
-    func showFolder(_ folder: Int, title: String) {
-        detailViewController.titleText = title
+    func showFolder(section: Int, row: Int) {
+        guard let folder = dataSyncManager.getFolder(section: section, row: row) else { return }
+        detailViewController.titleText = folder.name
         detailViewController.dataManager.clear()
-        detailViewController.dataManager.getConversations(for: folder)
+        detailViewController.dataManager.getConversations(for: folder.id)
         detailViewController.coordinator = self
 
         if detailNavigationController.topViewController != detailViewController {
@@ -103,6 +108,26 @@ class MainCoordinator: NSObject, Coordinator {
     ///
     /// This method triggers a data fetch operation for the `MailboxesViewController` to update the mailbox list.
     func reloadMailboxes() {
-        mainViewController.dataManager.getData()
+        dataSyncManager.syncMailboxStructure()
     }
+}
+
+extension MainCoordinator: DataSyncManagerDelegate {
+    func mailboxesDidLoad(_ result: MailboxSyncResult) {
+        mainViewController.reloadData(result)
+    }
+    
+    func syncDidStart() {
+        print("sync did start")
+    }
+    
+    func syncDidFinish() {
+        print("sync did finish")
+    }
+    
+    func syncDidFail(with error: any Error) {
+        print("sync did fail")
+    }
+    
+
 }

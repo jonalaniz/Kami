@@ -8,18 +8,24 @@
 import UIKit
 
 class FolderDataManager: BaseDataManager {
-    static let shared = FolderDataManager(configurator: Configurator.shared,
-                                          service: FreeScoutService.shared)
+    static let shared = FolderDataManager(
+        configurator: Configurator.shared,
+        service: FreeScoutService.shared
+    )
 
     var conversations = [ConversationPreview]()
 
-    private override init(configurator: Configurator, service: FreeScoutService) {
+    private override init(
+        configurator: Configurator,
+        service: FreeScoutService
+    ) {
         super.init(configurator: configurator, service: service)
     }
 
     func getConversations(for folder: Int) {
+        guard let secret = configurator.secret else { return }
         Task {
-            let object = try await service.fetchConversations()
+            let object = try await service.fetchConversations(using: secret)
             let filtered = object.container.conversations.filter { $0.folderId == folder }
             conversations = sorted(filtered)
             await notifyDataUpdated()

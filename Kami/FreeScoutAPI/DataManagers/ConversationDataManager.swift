@@ -8,8 +8,10 @@
 import UIKit
 
 class ConversationDataManager: BaseDataManager {
-    static let shared = ConversationDataManager(configurator: Configurator.shared,
-                                                service: FreeScoutService.shared)
+    static let shared = ConversationDataManager(
+        configurator: Configurator.shared,
+        service: FreeScoutService.shared
+    )
     var conversation: Conversation?
 
     private override init(configurator: Configurator, service: FreeScoutService) {
@@ -17,8 +19,11 @@ class ConversationDataManager: BaseDataManager {
     }
 
     func getConversation(_ id: Int) {
+        guard let secret = configurator.secret else { return }
         Task {
-            let object = try await service.fetchConversation(id)
+            let object = try await service.fetchConversation(
+                id, using: secret
+            )
             conversation = object
             await notifyDataUpdated()
         }
