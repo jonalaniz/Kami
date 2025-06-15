@@ -42,8 +42,13 @@ class FolderViewController: BaseTableViewController {
         print("button pressed")
     }
 
+    func clearDataSource() {
+        updateDataSource([ConversationPreview]())
+    }
+
     func updateDataSource(_ conversations: [ConversationPreview]) {
         folderDataSource.update(conversations)
+        guard tableView != nil else { return }
         tableView.reloadData()
     }
 
