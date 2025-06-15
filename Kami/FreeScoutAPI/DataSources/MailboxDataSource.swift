@@ -8,16 +8,30 @@
 import UIKit
 
 // swiftlint:disable identifier_name
+
+/// A data source for rendering mailbox sections and folders in a `UITableView`.
 final class MailboxDataSource: NSObject, UITableViewDataSource {
+    // MARK: - Internal State
+
     private var mailboxes = [Mailbox]()
     private var mailboxFolders = [Int: Folders]()
     private var users = [User]()
 
+    // MARK: - Public API
+
+    /// Updates the internal data used to render the table view.
+    /// 
+    /// - Parameters:
+    ///   - mailboxes: The list of mailboxes.
+    ///   - folders: A mapping from mailbox ID to its folders.
+    ///   - users: The list of users used for folder labeling.
     func update(mailboxes: [Mailbox], folders: [Int: Folders], users: [User]) {
         self.mailboxes = mailboxes
         self.mailboxFolders = folders
         self.users = users
     }
+
+    // MARK: - UITableViewDataSource
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return mailboxes.count
@@ -61,6 +75,9 @@ final class MailboxDataSource: NSObject, UITableViewDataSource {
         return cell
     }
 
+    // MARK: - Helpers
+
+    /// Returns a human-readable name for a folder, accounting for user-owned folders.
     private func name(of folder: Folder?) -> String {
         guard let folder = folder else { return "" }
 

@@ -12,6 +12,7 @@ protocol DataSyncManagerDelegate: AnyObject {
     func syncDidStart()
     func syncDidFinish()
     func syncDidFail(with error: Error)
+    func folderDidLoad(_ result: [ConversationPreview])
     func mailboxesDidLoad(_ result: MailboxSyncResult)
     func mailboxCacheLoaded(_ result: MailboxSyncResult)
 }
@@ -32,9 +33,8 @@ class DataSyncManager: NSObject {
     var secret: Secret?
 
     private var isSyncing = false
-    private var mailboxes = [Mailbox]()
-    private var mailboxFolders = [Int: Folders]()
-    private var users = [User]()
+    private var mailboxSyncResult: MailboxSyncResult?
+    private var conversationsSyncResult = [ConversationPreview]()
 
     @MainActor func syncMailboxStructure() {
         guard let secret = secret else { return }
@@ -53,13 +53,16 @@ class DataSyncManager: NSObject {
                 let usersContainer = try await service.fetchUsers(
                     using: secret
                 )
-                users = usersContainer.embeddedUsers.users
 
                 // Grab the Mailboxes
                 let mailboxContainer = try await service.fetchMailboxes(
                     using: secret
                 )
-                mailboxes = mailboxContainer.embeddedMailboxes.mailboxes
+
+                // Create the objects for our result
+                let users = usersContainer.embeddedUsers.users
+                let mailboxes = mailboxContainer.embeddedMailboxes.mailboxes
+                var mailboxFolders = [Int: Folders]()
 
                 // Grab the folders in each mailbox
                 for mailbox in mailboxes {
@@ -75,48 +78,42 @@ class DataSyncManager: NSObject {
                     users: users
                 )
 
-                let cache = MailboxCache(
-                    mailboxes: mailboxes,
-                    folders: mailboxFolders,
-                    users: users,
-                    timestamp: Date()
-                )
-
-                saveToCache(cache)
+                mailboxSyncResult = result
                 mailboxesDidLoad(result)
+                saveToCache(result.cache)
             } catch {
                 print(error)
             }
         }
     }
 
-    func getFolder(section: Int, row: Int) -> Folder? {
-        let mailbox = mailboxes[section]
-        return mailboxFolders[mailbox.id]?.container.folders[row]
+    @MainActor func syncConversations(in folder: Folder) {
+        guard let secret = secret else { return }
+        Task {
+            let result = try await service.fetchConversations(using: secret)
+            let filtered = result.container.conversations.filter {
+                $0.folderId == folder.id
+            }
+            conversationsSyncResult = sorted(filtered)
+            folderDidLoad(conversationsSyncResult)
+        }
     }
 
     private func loadMailboxesFromCache() {
-        // Check cache first
         if let cached = cacheManager.load(
             MailboxCache.self,
             from: "mailboxes.json"
         ) {
-            mailboxes = cached.mailboxes
-            mailboxFolders = cached.folders
-            users = cached.users
-            mailboxCacheUpdated(
-                MailboxSyncResult(
-                    mailboxes: mailboxes,
-                    folders: mailboxFolders,
-                    users: users
-                )
-            )
+            mailboxSyncResult = cached.syncResult
+            mailboxCacheUpdated(cached.syncResult)
         }
     }
 
     private func saveToCache(_ cache: MailboxCache) {
         cacheManager.save(cache, as: "mailboxes.json")
     }
+
+    // MARK: - Delegate Calls
 
     @MainActor
     private func mailboxesDidLoad(_ result: MailboxSyncResult) {
@@ -125,5 +122,27 @@ class DataSyncManager: NSObject {
 
     private func mailboxCacheUpdated(_ result: MailboxSyncResult) {
         delegate?.mailboxCacheLoaded(result)
+    }
+
+    @MainActor
+    private func folderDidLoad(_ result: [ConversationPreview]) {
+        delegate?.folderDidLoad(result)
+    }
+
+    // MARK: - Helper Methods
+
+    func getFolder(section: Int, row: Int) -> Folder? {
+        guard let result = mailboxSyncResult else { return nil }
+        let mailbox = result.mailboxes[section]
+        return result.folders[mailbox.id]?.container.folders[row]
+    }
+
+    // TODO: This will be removed when we sync and query CoreData
+    private func sorted(_ conversations: [ConversationPreview]) -> [ConversationPreview] {
+        let activeStatus = ConversationStatus.active.rawValue
+        let active = conversations.filter { $0.status == activeStatus }
+        let inactive = conversations.filter { $0.status != activeStatus }
+
+        return active + inactive
     }
 }

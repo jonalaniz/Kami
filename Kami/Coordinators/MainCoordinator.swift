@@ -45,7 +45,6 @@ class MainCoordinator: NSObject, Coordinator {
     }
 
     @MainActor func loadSecret() {
-        // Call the Credentials Manager and see if there is a valid key
         guard let secret = configurator.secret else {
             print("no secrets")
             showLoginView()
@@ -67,11 +66,14 @@ class MainCoordinator: NSObject, Coordinator {
     /// - Parameters:
     ///   - folder: The ID of the folder to display.
     ///   - title: The title of the folder to display in the navigation bar.
-    func showFolder(section: Int, row: Int) {
+    @MainActor func showFolder(section: Int, row: Int) {
         guard let folder = dataSyncManager.getFolder(section: section, row: row) else { return }
         detailViewController.titleText = folder.name
-        detailViewController.dataManager.clear()
-        detailViewController.dataManager.getConversations(for: folder.id)
+
+        // Here we need to have the DataSyncManager get the conversations
+        // in the folder
+        dataSyncManager.syncConversations(in: folder)
+        loadConversations(for: folder)
         detailViewController.coordinator = self
 
         if detailNavigationController.topViewController != detailViewController {
@@ -104,11 +106,12 @@ class MainCoordinator: NSObject, Coordinator {
         splitViewController.present(popoverNavigationController, animated: true)
     }
 
-    /// Reloads the list of mailboxes in the main view.
-    ///
-    /// This method triggers a data fetch operation for the `MailboxesViewController` to update the mailbox list.
     @MainActor func reloadMailboxes() {
         dataSyncManager.syncMailboxStructure()
+    }
+
+    @MainActor func loadConversations(for folder: Folder) {
+        dataSyncManager.syncConversations(in: folder)
     }
 }
 
@@ -119,6 +122,10 @@ extension MainCoordinator: DataSyncManagerDelegate {
 
     func mailboxesDidLoad(_ result: MailboxSyncResult) {
         mainViewController.reloadData(result)
+    }
+
+    func folderDidLoad(_ result: [ConversationPreview]) {
+        detailViewController.updateDataSource(result)
     }
 
     func syncDidStart() {

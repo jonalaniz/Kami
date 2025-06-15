@@ -7,23 +7,13 @@
 
 import UIKit
 
-/// A view controller responsible for displaying a list of conversations within a specific folder.
-///
-/// The `FolderViewController` manages the user interface for viewing and interacting with conversations.
-/// It integrates with the `FolderDataManager` to fetch and display the necessary data.
 class FolderViewController: BaseTableViewController {
-    let dataManager = FolderDataManager.shared
+    private let folderDataSource = FolderDataSource()
 
     override func viewDidLoad() {
-        dataSource = dataManager
+        dataSource = folderDataSource
         delegate = self
         super.viewDidLoad()
-        dataManager.delegate = self
-    }
-
-    override func registerCells() {
-        tableView.register(ConversationPreviewCell.self,
-                           forCellReuseIdentifier: ConversationPreviewCell.reuseIdentifier)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -32,6 +22,11 @@ class FolderViewController: BaseTableViewController {
         if let indexPath = tableView.indexPathForSelectedRow {
             tableView.deselectRow(at: indexPath, animated: true)
         }
+    }
+
+    override func registerCells() {
+        tableView.register(ConversationPreviewCell.self,
+                           forCellReuseIdentifier: ConversationPreviewCell.reuseIdentifier)
     }
 
     override func setupToolbar() {
@@ -47,6 +42,11 @@ class FolderViewController: BaseTableViewController {
         print("button pressed")
     }
 
+    func updateDataSource(_ conversations: [ConversationPreview]) {
+        folderDataSource.update(conversations)
+        tableView.reloadData()
+    }
+
     private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
         return UIBarButtonItem(image: symbol.image(),
                                style: .plain,
@@ -57,8 +57,10 @@ class FolderViewController: BaseTableViewController {
 
 extension FolderViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let conversation = dataManager.conversations[indexPath.row]
-        coordinator?.showConversation(conversation.id, title: conversation.subject)
+        print("Selected folder at: \(indexPath.row)")
+        // TODO: This needs to be called from Coordinator
+//        let conversation = dataManager.conversations[indexPath.row]
+//        coordinator?.showConversation(conversation.id, title: conversation.subject)
     }
 }
 
