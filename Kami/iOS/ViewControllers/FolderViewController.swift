@@ -8,7 +8,11 @@
 import UIKit
 
 class FolderViewController: BaseTableViewController {
+    // MARK: - Properties
+
     private let folderDataSource = FolderDataSource()
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         dataSource = folderDataSource
@@ -24,10 +28,7 @@ class FolderViewController: BaseTableViewController {
         }
     }
 
-    override func registerCells() {
-        tableView.register(ConversationPreviewCell.self,
-                           forCellReuseIdentifier: ConversationPreviewCell.reuseIdentifier)
-    }
+    // MARK: - Setup
 
     override func setupToolbar() {
         toolbarItems = [
@@ -38,9 +39,20 @@ class FolderViewController: BaseTableViewController {
         super.setupToolbar()
     }
 
+    override func registerCells() {
+        tableView.register(
+            ConversationPreviewCell.self,
+            forCellReuseIdentifier: ConversationPreviewCell.reuseIdentifier
+        )
+    }
+
+    // MARK: - Actions
+
     @objc func buttonPressed(_ sender: UIBarButtonItem) {
         print("button pressed")
     }
+
+    // MARK: - Data Handling
 
     func clearDataSource() {
         updateDataSource([ConversationPreview]())
@@ -51,6 +63,8 @@ class FolderViewController: BaseTableViewController {
         guard tableView != nil else { return }
         tableView.reloadData()
     }
+
+    // MARK: - Helper Methods
 
     private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
         return UIBarButtonItem(image: symbol.image(),

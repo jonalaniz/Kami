@@ -17,12 +17,14 @@ class BaseTableViewController: UIViewController {
 
     weak var coordinator: MainCoordinator?
     var tableView: UITableView!
-    var dataSource: UITableViewDataSource?
     var delegate: UITableViewDelegate?
     var titleText: String?
     var tableStyle: UITableView.Style = .plain
     var toolbarColor: UIColor = .subHeaderToolbar
     var toolbarTint: UIColor = .iconsTexts
+
+    // TODO: Delete these properties after refactoring all ViewControllers
+    var dataSource: UITableViewDataSource?
 
     // MARK: - Lifecycle
 

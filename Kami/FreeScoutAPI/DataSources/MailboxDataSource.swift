@@ -20,7 +20,7 @@ final class MailboxDataSource: NSObject, UITableViewDataSource {
     // MARK: - Public API
 
     /// Updates the internal data used to render the table view.
-    /// 
+    ///
     /// - Parameters:
     ///   - mailboxes: The list of mailboxes.
     ///   - folders: A mapping from mailbox ID to its folders.
@@ -40,20 +40,6 @@ final class MailboxDataSource: NSObject, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let id = mailboxes[section].id
         return mailboxFolders[id]?.container.folders.count ?? 0
-    }
-
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return mailboxes[section].name
-    }
-
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerView = HeaderFooterView()
-        headerView.configure(
-            label: mailboxes[section].name,
-            type: .header
-        )
-
-        return headerView
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

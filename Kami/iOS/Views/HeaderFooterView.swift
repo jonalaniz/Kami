@@ -68,9 +68,8 @@ class HeaderFooterView: UIView {
     /// - Adds the label as a subview.
     private func setupView() {
         headerLabel.numberOfLines = 0
+        headerLabel.textColor = .mailboxHeader
         headerLabel.translatesAutoresizingMaskIntoConstraints = false
-        headerLabel.textColor = .iconsMainToolbar
-
         addSubview(headerLabel)
     }
 

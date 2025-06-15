@@ -8,7 +8,12 @@
 import UIKit
 
 class MailboxesViewController: BaseTableViewController {
-    let mailboxesDataSource = MailboxDataSource()
+    // MARK: - Properties
+
+    private let mailboxesDataSource = MailboxDataSource()
+    private var mailboxes = [Mailbox]()
+
+    // MARK: - Lifecycle
 
     override func viewDidLoad() {
         dataSource = mailboxesDataSource
@@ -25,6 +30,18 @@ class MailboxesViewController: BaseTableViewController {
         }
     }
 
+    // MARK: - Setup
+
+    override func setupView() {
+        super.setupView()
+        navigationItem.leftBarButtonItem = barButtonItem(
+            .preferences,
+            action: #selector(showPreferences)
+        )
+    }
+
+    override func setupToolbar() {}
+
     override func registerCells() {
         tableView.register(
             MailboxCell.self,
@@ -32,20 +49,16 @@ class MailboxesViewController: BaseTableViewController {
         )
     }
 
-    override func setupView() {
-        super.setupView()
-        navigationItem.leftBarButtonItem = barButtonItem(
-            .preferences, action: #selector(showPreferences)
-        )
-    }
-
-    override func setupToolbar() {}
+    // MARK: - Actions
 
     @objc func showPreferences() {
         coordinator?.showPreferences()
     }
 
+    // MARK: - Data Handling
+
     func loadDataSource(_ result: MailboxSyncResult) {
+        mailboxes = result.mailboxes
         mailboxesDataSource.update(
             mailboxes: result.mailboxes,
             folders: result.folders,
@@ -55,13 +68,10 @@ class MailboxesViewController: BaseTableViewController {
 
     func reloadData(_ result: MailboxSyncResult) {
         loadDataSource(result)
-        print(tableView.contentSize)
-        print(tableView.frame)
         tableView.reloadData()
-        print(tableView.contentSize)
-        print(tableView.frame)
-
     }
+
+    // MARK: - Helper Methods
 
     private func barButtonItem(_ symbol: Symbol, action: Selector) -> UIBarButtonItem {
         return UIBarButtonItem(
@@ -73,8 +83,20 @@ class MailboxesViewController: BaseTableViewController {
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension MailboxesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         coordinator?.showFolder(section: indexPath.section, row: indexPath.row)
+    }
+
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = HeaderFooterView()
+        headerView.configure(
+            label: mailboxes[section].name,
+            type: .header
+        )
+
+        return headerView
     }
 }
