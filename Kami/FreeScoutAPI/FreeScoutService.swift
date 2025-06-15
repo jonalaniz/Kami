@@ -17,9 +17,7 @@ final class FreeScoutService {
 
     // MARK: - Properties
 
-    // TODO: Need to remove properties from Service
     private let apiManager = APIManager.shared
-    private var folders = [Folder]()
 
     // MARK: - Requests
 
@@ -55,18 +53,6 @@ final class FreeScoutService {
         using secret: Secret
     ) async throws -> Conversation {
         return try await get(endpoint: .conversation(id), secret: secret)
-    }
-
-    // MARK: - Public Functions
-
-    func set(_ folders: Folders) {
-        self.folders = folders.container.folders.sorted(
-            by: { $0.id < $1.id }
-        )
-    }
-
-    func mainFolders() -> [Folder] {
-        return folders.filter { $0.userId == nil }
     }
 
     // MARK: - Helper Functions
