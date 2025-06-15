@@ -8,14 +8,20 @@
 import Foundation
 
 // swiftlint:disable identifier_name
+/// A network service responsible for interfacing with the FreeScout API.
 final class FreeScoutService {
+    // MARK: - Singleton
+
     static let shared = FreeScoutService()
+    private init() {}
 
+    // MARK: - Properties
+
+    // TODO: Need to remove properties from Service
     private let apiManager = APIManager.shared
-
     private var folders = [Folder]()
 
-    private init() {}
+    // MARK: - Requests
 
     func fetchConversations(using secret: Secret) async throws -> ConversationContainer {
         var urlWithEndpoint = secret.url.appendingPathComponentSafely(
@@ -33,53 +39,25 @@ final class FreeScoutService {
     }
 
     func fetchFolders(for mailbox: Int, using secret: Secret) async throws -> Folders {
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
-            Endpoint.folders(mailbox).path
-        )
-        return try await apiManager.request(
-            url: urlWithEndpoint,
-            httpMethod: .get,
-            body: nil,
-            headers: defaultHeaders(withKey: secret.key)
-        )
+        return try await get(endpoint: .folders(mailbox), secret: secret)
     }
 
     func fetchMailboxes(using secret: Secret) async throws -> MailboxContainer {
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
-            Endpoint.mailbox.path
-        )
-        return try await apiManager.request(
-            url: urlWithEndpoint,
-            httpMethod: .get,
-            body: nil,
-            headers: defaultHeaders(withKey: secret.key)
-        )
+        return try await get(endpoint: .mailboxes, secret: secret)
     }
 
     func fetchUsers(using secret: Secret) async throws -> Users {
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
-            Endpoint.users.path
-        )
-        return try await apiManager.request(url: urlWithEndpoint,
-                                            httpMethod: .get,
-                                            body: nil,
-                                            headers: defaultHeaders(withKey: secret.key))
+        return try await get(endpoint: .users, secret: secret)
     }
 
     func fetchConversation(
         _ id: Int,
         using secret: Secret
     ) async throws -> Conversation {
-        let urlWithEndpoint = secret.url.appendingPathComponentSafely(
-            Endpoint.conversation(id).path
-        )
-        return try await apiManager.request(
-            url: urlWithEndpoint,
-            httpMethod: .get,
-            body: nil,
-            headers: defaultHeaders(withKey: secret.key)
-        )
+        return try await get(endpoint: .conversation(id), secret: secret)
     }
+
+    // MARK: - Public Functions
 
     func set(_ folders: Folders) {
         self.folders = folders.container.folders.sorted(
@@ -91,13 +69,31 @@ final class FreeScoutService {
         return folders.filter { $0.userId == nil }
     }
 
+    // MARK: - Helper Functions
+
     private func defaultHeaders(withKey key: String) -> [String: String] {
         let headers: [String: String] = [
             HeaderKeyValue.apiKey.rawValue: key,
             HeaderKeyValue.accept.rawValue: HeaderKeyValue.applicationJSON.rawValue,
             HeaderKeyValue.contentType.rawValue: HeaderKeyValue.jsonCharset.rawValue
         ]
-
         return headers
+    }
+
+    private func makeURL(for endpoint: Endpoint, secret: Secret) -> URL {
+        return secret.url.appendingPathComponentSafely(endpoint.path)
+    }
+
+    private func get<T: Codable>(
+        endpoint: Endpoint,
+        secret: Secret
+    ) async throws -> T {
+        let url = makeURL(for: endpoint, secret: secret)
+        return try await apiManager.request(
+            url: url,
+            httpMethod: .get,
+            body: nil,
+            headers: defaultHeaders(withKey: secret.key)
+        )
     }
 }
