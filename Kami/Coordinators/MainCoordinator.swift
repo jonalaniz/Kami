@@ -8,41 +8,50 @@
 import UIKit
 
 class MainCoordinator: NSObject, Coordinator {
-    // MARK: - Properties
-
-    let mainViewController: MailboxesViewController
-    let detailNavigationController: UINavigationController
-    let detailViewController: FolderViewController
+    // MARK: - Dependencies
 
     private let configurator = Configurator.shared
     private let dataSyncManager = DataSyncManager.shared
 
-    var childCoordinators = [Coordinator]()
+    // MARK: - View Controllers
+
+    let mainViewController = MailboxesViewController()
+    let detailViewController = FolderViewController()
+    let detailNavigationController: UINavigationController
     var splitViewController: UISplitViewController
 
-    // MARK: - Lifecycle
+    // MARK: - Coordinator State
 
-    /// Initializes the `MainCoordinator` with the given split view controller.
-    ///
-    /// - Parameter splitViewController: The `UISplitViewController` instance to manage.
+    var childCoordinators = [Coordinator]()
+
+    // MARK: - Init
+
     init(splitViewController: UISplitViewController) {
         self.splitViewController = splitViewController
-
-        mainViewController = MailboxesViewController()
-        detailViewController = FolderViewController()
-        detailNavigationController = UINavigationController(rootViewController: detailViewController)
+        detailNavigationController = UINavigationController(
+            rootViewController: detailViewController
+        )
     }
+
+    // MARK: - Start
 
     func start() {
         // Set our delegates/coordinators
         mainViewController.coordinator = self
+        detailViewController.coordinator = self
         dataSyncManager.delegate = self
 
         // Initialize our SplitView
-        let mainNavigationController = UINavigationController(rootViewController: mainViewController)
-        detailNavigationController.viewControllers = [detailViewController]
-        splitViewController.viewControllers = [mainNavigationController, detailNavigationController]
+        let mainNavigationController = UINavigationController(
+            rootViewController: mainViewController
+        )
+        splitViewController.viewControllers = [
+            mainNavigationController,
+            detailNavigationController
+        ]
     }
+
+    // MARK: - Sync
 
     @MainActor func loadSecret() {
         guard let secret = configurator.secret else {
@@ -57,55 +66,6 @@ class MainCoordinator: NSObject, Coordinator {
         dataSyncManager.syncMailboxStructure()
     }
 
-    func showLoginView() {
-
-    }
-
-    /// Displays a folder and its associated conversations in the detail view.
-    ///
-    /// - Parameters:
-    ///   - folder: The ID of the folder to display.
-    ///   - title: The title of the folder to display in the navigation bar.
-    @MainActor func showFolder(section: Int, row: Int) {
-        guard let folder = dataSyncManager.getFolder(section: section, row: row) else { return }
-        detailViewController.titleText = folder.name
-
-        // Here we need to have the DataSyncManager get the conversations
-        // in the folder
-        dataSyncManager.syncConversations(in: folder)
-        loadConversations(for: folder)
-        detailViewController.coordinator = self
-
-        if detailNavigationController.topViewController != detailViewController {
-            detailNavigationController.setViewControllers([detailViewController], animated: true)
-        }
-
-        splitViewController.showDetailViewController(detailNavigationController, sender: nil)
-    }
-
-    /// Displays a specific conversation in the detail navigation stack.
-    ///
-    /// - Parameters:
-    ///   - conversation: The ID of the conversation to display.
-    ///   - title: The title of the conversation to display in the navigation bar.
-    func showConversation(_ conversation: Int, title: String) {
-        let conversationViewController = ConversationViewController()
-        conversationViewController.titleText = title
-        conversationViewController.dataManager.clear()
-        conversationViewController.dataManager.getConversation(conversation)
-
-        detailNavigationController.pushViewController(conversationViewController, animated: true)
-    }
-
-    /// Presents the preferences screen as a modal popover.
-    ///
-    /// This method displays the `PreferencesViewController` in a navigation controller modally.
-    func showPreferences() {
-        print("showPreferencesCalled")
-        let popoverNavigationController = UINavigationController(rootViewController: PreferencesViewController())
-        splitViewController.present(popoverNavigationController, animated: true)
-    }
-
     @MainActor func reloadMailboxes() {
         dataSyncManager.syncMailboxStructure()
     }
@@ -113,7 +73,53 @@ class MainCoordinator: NSObject, Coordinator {
     @MainActor func loadConversations(for folder: Folder) {
         dataSyncManager.syncConversations(in: folder)
     }
+
+    // MARK: - Navigation
+
+    func showLoginView() {
+        // TODO: Implement loginView, potentially in future Auth Coordinator
+    }
+
+    func showPreferences() {
+        let navigationController = UINavigationController(
+            rootViewController: PreferencesViewController()
+        )
+        splitViewController.present(navigationController, animated: true)
+    }
+
+    @MainActor func showFolder(section: Int, row: Int) {
+        guard let folder = dataSyncManager.getFolder(section: section, row: row)
+        else { return }
+        detailViewController.titleText = folder.name
+        detailViewController.clearDataSource()
+
+        loadConversations(for: folder)
+
+        if detailNavigationController.topViewController != detailViewController {
+            detailNavigationController.setViewControllers(
+                [detailViewController],
+                animated: true
+            )
+        }
+
+        splitViewController.showDetailViewController(
+            detailNavigationController,
+            sender: nil
+        )
+    }
+
+    func showConversation(_ conversation: Int, title: String) {
+        let viewController = ConversationViewController()
+        viewController.titleText = title
+        viewController.dataManager.clear()
+        viewController.dataManager.getConversation(conversation)
+
+        detailNavigationController.pushViewController(viewController, animated: true)
+    }
 }
+
+// MARK: - DataSyncManagerDelegate
+// TODO: Move this to it's own file after CoreData implementaiton.
 
 extension MainCoordinator: DataSyncManagerDelegate {
     func mailboxCacheLoaded(_ result: MailboxSyncResult) {
