@@ -15,5 +15,5 @@ enum SourceType: String, Codable {
 
 struct Source: Codable {
     let type: SourceType
-    let via: Person
+    let via: Person?
 }

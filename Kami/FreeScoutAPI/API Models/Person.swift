@@ -16,4 +16,5 @@ import Foundation
 enum Person: String, Codable {
     case customer
     case user
+    case none = ""
 }
