@@ -98,13 +98,7 @@ class ConversationPreviewCell: BaseTableViewCell {
         previewLabel.text = conversation.preview
 
         // Here we configure the bkcolor
-        guard let status = ConversationStatus(rawValue: conversation.status)
-        else {
-            backgroundColor = .inactiveCell
-            return
-        }
-
-        setBackgroundColor(for: status)
+        setBackgroundColor(for: conversation.status)
     }
 
     /// Updates the cell's background color based on the conversation status.
@@ -116,12 +110,4 @@ class ConversationPreviewCell: BaseTableViewCell {
         default: backgroundColor = .inactiveCell
         }
     }
-}
-
-/// Enum representing the possible statuses of a conversation.
-enum ConversationStatus: String {
-    case active
-    case closed
-    case pending
-    case spam
 }

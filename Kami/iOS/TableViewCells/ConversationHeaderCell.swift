@@ -100,7 +100,7 @@ class ConversationHeaderCell: BaseTableViewCell {
     func configure(sender: String,
                    date: String,
                    to: [String]?,
-                   assignedTo: User?,
+                   assignedTo: ConversationUser?,
                    status: String) {
         senderLabel.text = sender
         dateLabel.text = date.formattedDate()

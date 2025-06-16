@@ -31,26 +31,26 @@ struct ConversationPreview: Codable {
     let id: Int
     let number: Int
     let threadCount: Int?
-    let type: String
+    let type: ConversationType
     let folderId: Int
-    let status: String
-    let state: String
+    let status: ConversationStatus
+    let state: ConversationState
     let subject: String
     let preview: String
     let mailboxID: String?
-    let assignee: User?
-    let createdBy: User
+    let assignee: Assignee?
+    let createdBy: CreatedByUser
     let createdAt: String
     let updatedAt: String
     let closedBy: Int?
-    let closedByUser: User?
+    let closedByUser: ConversationUser?
     let closedAt: String?
     let userUpdatedAt: String?
     let customerWaitingSince: TimeFrame
     let source: Source
     let cc: CCType
     let bcc: [String]
-    let customer: User?
+    let customer: ConversationUser?
 }
 
 enum CCType: Codable {

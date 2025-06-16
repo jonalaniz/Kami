@@ -27,6 +27,7 @@ struct EmbeddedUsers: Codable {
     let users: [User]
 }
 
+// TODO: This User needs to be the main user and change the other models to ConversationUser
 struct User: Codable {
     let id: Int
     let role: String?

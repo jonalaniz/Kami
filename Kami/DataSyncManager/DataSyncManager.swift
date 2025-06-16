@@ -139,9 +139,8 @@ class DataSyncManager: NSObject {
 
     // TODO: This will be removed when we sync and query CoreData
     private func sorted(_ conversations: [ConversationPreview]) -> [ConversationPreview] {
-        let activeStatus = ConversationStatus.active.rawValue
-        let active = conversations.filter { $0.status == activeStatus }
-        let inactive = conversations.filter { $0.status != activeStatus }
+        let active = conversations.filter { $0.status == .active }
+        let inactive = conversations.filter { $0.status != .active }
 
         return active + inactive
     }
