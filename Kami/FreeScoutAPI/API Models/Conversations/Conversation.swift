@@ -84,11 +84,6 @@ struct ConversationUser: Codable {
     }
 }
 
-struct CustomField: Codable {
-    let id: Int
-    let name, value, text: String
-}
-
 struct EmbeddedThreads: Codable {
     let threads: [Thread]
     let timelogs: [Timelog]
