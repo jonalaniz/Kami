@@ -69,8 +69,8 @@ final class MailboxDataSource: NSObject, UITableViewDataSource {
 
         if let user = users.first(where: {$0.id == folder.userId }) {
             switch folder.name {
-            case "Mine": return "\(user.name())'s Conversations"
-            case "Starred": return "Starred by \(user.name())"
+            case "Mine": return "\(user.displayName)'s Conversations"
+            case "Starred": return "Starred by \(user.displayName)"
             default: break
             }
         }

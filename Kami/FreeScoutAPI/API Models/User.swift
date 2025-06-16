@@ -27,29 +27,20 @@ struct EmbeddedUsers: Codable {
     let users: [User]
 }
 
-// TODO: This User needs to be the main user and change the other models to ConversationUser
 struct User: Codable {
     let id: Int
     let role: String?
     let firstName: String?
     let lastName: String?
-    let photoUrl: String
+    let photoUrl: String?
     let email: String
 
-    func name() -> String {
-        var name = ""
-        if let firstName = firstName {
-            name += firstName
-        }
+    var displayName: String {
+        let fullName = [firstName, lastName]
+            .compactMap { $0?.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
 
-        if let lastName = lastName {
-            name += " " + lastName
-        }
-
-        if name == "" {
-            name += email
-        }
-
-        return name
+        return fullName.isEmpty ? email : fullName
     }
 }

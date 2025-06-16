@@ -17,7 +17,7 @@ struct Conversation: Codable {
     let subject, preview: String
     let mailboxID: Int
     let assignee: Assignee
-    let createdBy: CreatedByUser?
+    let createdBy: ConversationUser?
     let createdAt: String
     let updatedAt: String?
     let closedBy: Int?
@@ -50,12 +50,15 @@ struct Assignee: Codable {
     let firstName: String?
     let lastName: String?
     let email: String
-}
 
-struct CreatedByUser: Codable {
-    let id: Int
-    let type: String
-    let email: String
+    var displayName: String {
+        let fullName = [firstName, lastName]
+            .compactMap { $0?.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
+
+        return fullName.isEmpty ? email : fullName
+    }
 }
 
 struct ConversationUser: Codable {
@@ -63,24 +66,16 @@ struct ConversationUser: Codable {
     let type: String?
     let firstName: String?
     let lastName: String?
-    let photoUrl: String
+    let photoUrl: String?
     let email: String
 
-    func name() -> String {
-        var name = ""
-        if let firstName = firstName {
-            name += firstName
-        }
+    var displayName: String {
+        let fullName = [firstName, lastName]
+            .compactMap { $0?.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .joined(separator: " ")
 
-        if let lastName = lastName {
-            name += " " + lastName
-        }
-
-        if name == "" {
-            name += email
-        }
-
-        return name
+        return fullName.isEmpty ? email : fullName
     }
 }
 

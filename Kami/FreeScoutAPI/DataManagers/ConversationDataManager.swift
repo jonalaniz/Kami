@@ -74,7 +74,7 @@ extension ConversationDataManager: UITableViewDataSource, UITableViewDelegate {
         ) as? ConversationHeaderCell
         else { fatalError("DequeueReusableCell failed while casting as ConversationHeaderCell") }
 
-        cell.configure(sender: thread.createdBy?.name() ?? "",
+        cell.configure(sender: thread.createdBy?.displayName ?? "",
                        date: thread.createdAt,
                        to: thread.to,
                        assignedTo: thread.assignedTo,

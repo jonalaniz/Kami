@@ -93,7 +93,7 @@ class ConversationPreviewCell: BaseTableViewCell {
     /// - Parameter conversation: A `ConversationPreview` object containing
     ///   the sender, subject, preview, and status information.
     func configure(with conversation: ConversationPreview) {
-        senderLabel.text = conversation.customer?.name()
+        senderLabel.text = conversation.customer?.displayName
         subjectLabel.text = conversation.subject
         previewLabel.text = conversation.preview
 
