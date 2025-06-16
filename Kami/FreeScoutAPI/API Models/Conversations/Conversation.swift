@@ -78,27 +78,3 @@ struct ConversationUser: Codable {
         return fullName.isEmpty ? email : fullName
     }
 }
-
-struct EmbeddedThreads: Codable {
-    let threads: [Thread]
-    let timelogs: [Timelog]?
-    let tags: [Tag]?
-}
-
-struct EmbeddedAttachments: Codable {
-    let attachments: [Attachment]
-}
-
-struct Attachment: Codable {
-    let id: Int
-    let fileName: String
-    let fileURL: String
-    let mimeType: String
-    let size: Int
-
-    enum CodingKeys: String, CodingKey {
-        case id, fileName
-        case fileURL = "fileUrl"
-        case mimeType, size
-    }
-}

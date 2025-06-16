@@ -8,6 +8,12 @@
 import Foundation
 
 // swiftlint:disable identifier_name
+struct EmbeddedThreads: Codable {
+    let threads: [Thread]
+    let timelogs: [Timelog]?
+    let tags: [Tag]?
+}
+
 struct Thread: Codable {
     let id: Int
     let type: ThreadType
