@@ -101,7 +101,7 @@ class ConversationHeaderCell: BaseTableViewCell {
                    date: String,
                    to: [String]?,
                    assignedTo: ConversationUser?,
-                   status: String) {
+                   status: ThreadStatus) {
         senderLabel.text = sender
         dateLabel.text = date.formattedDate()
 
@@ -113,6 +113,6 @@ class ConversationHeaderCell: BaseTableViewCell {
         }
         toLabel.text = toText
 
-        statusLabel.text = status
+        statusLabel.text = status.rawValue
     }
 }

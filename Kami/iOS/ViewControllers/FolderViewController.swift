@@ -76,10 +76,7 @@ class FolderViewController: BaseTableViewController {
 
 extension FolderViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Selected folder at: \(indexPath.row)")
-        // TODO: This needs to be called from Coordinator
-//        let conversation = dataManager.conversations[indexPath.row]
-//        coordinator?.showConversation(conversation.id, title: conversation.subject)
+        coordinator?.showConversation(row: indexPath.row)
     }
 }
 

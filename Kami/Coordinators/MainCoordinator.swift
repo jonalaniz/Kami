@@ -108,11 +108,12 @@ class MainCoordinator: NSObject, Coordinator {
         )
     }
 
-    func showConversation(_ conversation: Int, title: String) {
+    func showConversation(row: Int) {
+        guard let conversation = dataSyncManager.getConversation(row: row) else { return }
         let viewController = ConversationViewController()
-        viewController.titleText = title
+        viewController.titleText = conversation.subject
         viewController.dataManager.clear()
-        viewController.dataManager.getConversation(conversation)
+        viewController.dataManager.getConversation(conversation.id)
 
         detailNavigationController.pushViewController(viewController, animated: true)
     }

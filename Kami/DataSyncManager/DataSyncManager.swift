@@ -137,6 +137,13 @@ class DataSyncManager: NSObject {
         return result.folders[mailbox.id]?.container.folders[row]
     }
 
+    func getConversation(row: Int) -> ConversationPreview? {
+        guard row <= conversationsSyncResult.count
+        else { return nil }
+        let conversation = conversationsSyncResult[row]
+        return conversation
+    }
+
     // TODO: This will be removed when we sync and query CoreData
     private func sorted(_ conversations: [ConversationPreview]) -> [ConversationPreview] {
         let active = conversations.filter { $0.status == .active }
