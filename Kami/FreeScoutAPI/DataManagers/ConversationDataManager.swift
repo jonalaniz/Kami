@@ -25,11 +25,6 @@ class ConversationDataManager: BaseDataManager {
             let object = try await service.fetchConversation(
                 id, using: secret
             )
-            for thread in object.embedded.threads {
-                print("Type: \(thread.type)")
-                print("State: \(thread.state)")
-                print("Status: \(thread.status)")
-            }
             conversation = object
             await notifyDataUpdated()
         }
