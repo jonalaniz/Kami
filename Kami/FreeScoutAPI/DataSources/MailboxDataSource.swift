@@ -66,15 +66,15 @@ final class MailboxDataSource: NSObject, UITableViewDataSource {
     /// Returns a human-readable name for a folder, accounting for user-owned folders.
     private func name(of folder: Folder?) -> String {
         guard let folder = folder else { return "" }
+        guard
+            let userId = folder.userId,
+            let user = users.first(where: { $0.id == userId })
+        else { return folder.name }
 
-        if let user = users.first(where: {$0.id == folder.userId }) {
-            switch folder.name {
-            case "Mine": return "\(user.displayName)'s Conversations"
-            case "Starred": return "Starred by \(user.displayName)"
-            default: break
-            }
+        switch folder.type {
+        case .mine: return "\(user.displayName)'s Conversations"
+        case .starred: return "Starred by \(user.displayName)"
+        default: return folder.name
         }
-
-        return folder.name
     }
 }
