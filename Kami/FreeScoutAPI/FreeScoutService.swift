@@ -44,7 +44,7 @@ final class FreeScoutService {
         return try await get(endpoint: .mailboxes, secret: secret)
     }
 
-    func fetchUsers(using secret: Secret) async throws -> Users {
+    func fetchUsers(using secret: Secret) async throws -> UsersContainer {
         return try await get(endpoint: .users, secret: secret)
     }
 

@@ -8,7 +8,7 @@
 import Foundation
 
 // swiftlint:disable identifier_name
-struct Users: Codable {
+struct UsersContainer: Codable {
     let embeddedUsers: EmbeddedUsers
     let page: Page
 
@@ -29,11 +29,18 @@ struct EmbeddedUsers: Codable {
 
 struct User: Codable {
     let id: Int
-    let role: String?
     let firstName: String?
     let lastName: String?
-    let photoUrl: String?
     let email: String
+    let role: Role
+    let alternateEmails: String?
+    let jobTitle: String?
+    let phone: String?
+    let timezone: String
+    let photoUrl: String?
+    let language: String?
+    let createdAt: String
+    let updatedAt: String?
 
     var displayName: String {
         let fullName = [firstName, lastName]
