@@ -7,6 +7,7 @@
 
 import Foundation
 
+// swiftlint:disable identifier_name
 struct Timelog: Codable {
     let id: Int
     let coversationStatus: String

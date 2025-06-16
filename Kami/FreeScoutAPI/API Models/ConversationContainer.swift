@@ -9,16 +9,16 @@ import Foundation
 
 // swiftlint:disable identifier_name
 struct ConversationContainer: Codable {
-    let container: EmbeddedConversations
+    let embedded: EmbeddedConversations
     let page: Page
 
     enum CodingKeys: String, CodingKey {
-        case container = "_embedded"
+        case embedded = "_embedded"
         case page
     }
 
     init(container: EmbeddedConversations, page: Page) {
-        self.container = container
+        self.embedded = container
         self.page = page
     }
 }

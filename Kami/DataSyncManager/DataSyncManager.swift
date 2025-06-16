@@ -91,7 +91,7 @@ class DataSyncManager: NSObject {
         guard let secret = secret else { return }
         Task {
             let result = try await service.fetchConversations(using: secret)
-            let filtered = result.container.conversations.filter {
+            let filtered = result.embedded.conversations.filter {
                 $0.folderId == folder.id
             }
             conversationsSyncResult = sorted(filtered)
